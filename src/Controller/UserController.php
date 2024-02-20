@@ -27,4 +27,13 @@ class UserController extends AbstractController
             'userName' => $userName,
         ]);
     }
+
+    #[Route('user/select', name: 'app_user_select')]
+    public function selectUser() {
+        $users = $this->userRepository->findAll();
+
+        return $this->render('user/select_user.html.twig', [
+            'users' => $users,
+        ]);
+    }
 }

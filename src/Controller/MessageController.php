@@ -16,13 +16,29 @@ class MessageController extends AbstractController
 {
     private $userRepository;
 
-    public function __contruct(UserRepository $userRepository) {
+    public function __construct(UserRepository $userRepository, MessageRepository $messageRepository) {
         $this->userRepository = $userRepository;
     }
 
-    #[Route('/messages', name: 'app_message')]
+    #[Route('/user/dialog/{id}', name: 'app_dialog')]
+    public function dialog(UserRepository $userRepository, MessageRepository $messageRepository, int $id): Response
+    {
+        $selectedUser = $userRepository->find($id);
+
+        $currentUser = $this->getUser();
+        $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
+
+        return $this->render('messages/dialog.html.twig', [
+            'selectedUser' => $selectedUser,
+            'messages' => $messages
+        ]);
+    }
+
+    #[Route('/message', name: 'app_message')]
     public function sendMessage(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $users = $this->userRepository->findAll();
+
         $message = new Message();
         $form = $this->createForm(MessageType::class, $message);
 
@@ -32,6 +48,8 @@ class MessageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Get the authenticated user
             $user = $this->getUser();
+
+            $recipientId = $request->request->get('recipient');
 
             // Set user as the sender
             $message->setSender($user);
@@ -46,6 +64,7 @@ class MessageController extends AbstractController
 
         return $this->render('messages/message.html.twig', [
             'messageForm' => $form->createView(),
+            'users' => $users
         ]);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Message;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,28 +22,20 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
-//    /**
-//     * @return Message[] Returns an array of Message objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Message[]
+     */
+    public function findDialogMessages(User $currentUser, User $selectedUser): array
+    {
+        $qb = $this->createQueryBuilder('m');
 
-//    public function findOneBySomeField($value): ?Message
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb
+            ->where('m.sender = :currentUser AND m.recipient = :selectedUser')
+            ->orWhere('m.sender = :selectedUser AND m.recipient = :currentUser')
+            ->setParameter('currentUser', $currentUser)
+            ->setParameter('selectedUser', $selectedUser)
+            ->orderBy('m.createdAt', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
 }
