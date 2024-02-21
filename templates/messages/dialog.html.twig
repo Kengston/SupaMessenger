@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dialog with {{ selectedUser.username }}{% endblock %}
+
+{% block body %}
+    <h1>Dialog with {{ selectedUser.username }}</h1>
+
+    <div>
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>Send a Message</h2>
+
+    {{ form_start(messageForm) }}
+    {{ form_row(messageForm.content) }}
+
+    <button type="submit" class="btn btn-primary">Send</button>
+    {{ form_end(messageForm) }}
+{% endblock %}

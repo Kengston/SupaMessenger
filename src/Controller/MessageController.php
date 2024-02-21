@@ -21,16 +21,36 @@ class MessageController extends AbstractController
     }
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
-    public function dialog(UserRepository $userRepository, MessageRepository $messageRepository, int $id): Response
+    public function dialog(UserRepository $userRepository, MessageRepository $messageRepository, int $id, EntityManagerInterface $entityManager, Request $request): Response
     {
+        $newMessage = new Message();
+        $form = $this->createForm(MessageType::class, $newMessage);
+
         $selectedUser = $userRepository->find($id);
 
         $currentUser = $this->getUser();
         $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
 
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // Set user as the sender
+            $newMessage->setSender($currentUser);
+            $newMessage->setRecipient($selectedUser);
+            $newMessage->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($newMessage);
+            $entityManager->flush();
+
+            // Redirect or show some success messages
+            return $this->redirectToRoute('app_dialog', ['id' => $id]);
+        }
+
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
-            'messages' => $messages
+            'messages' => $messages,
+            'messageForm' => $form->createView()
         ]);
     }
 
