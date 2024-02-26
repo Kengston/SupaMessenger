@@ -33,6 +33,7 @@
 
             // Handle incoming messages
             eventSource.onmessage = function(event) {
+                console.log('jopa')
                 const data = JSON.parse(event.data);
                 // Update the UI with the new message
                 const messageList = document.getElementById('message-list');

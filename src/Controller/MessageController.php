@@ -24,36 +24,6 @@ class MessageController extends AbstractController
         $this->userRepository = $userRepository;
     }
 
-    #[Route('/messages', name: 'app_message')]
-    public function sendMessage(Request $request, EntityManagerInterface $entityManager): Response
-    {
-
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-
-        // Handle request
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Get the authenticated user
-            $user = $this->getUser();
-
-            // Set user as the sender
-            $message->setSender($user);
-            $message->setCreatedAt(new \DateTimeImmutable());
-
-            $entityManager->persist($message);
-            $entityManager->flush();
-
-            // Redirect or show some success messages
-            return $this->redirectToRoute('app_user');
-        }
-
-        return $this->render('messages/message.html.twig', [
-            'messageForm' => $form->createView(),
-        ]);
-    }
-
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
     public function dialog(UserRepository $userRepository, MessageRepository $messageRepository,
                            int $id, EntityManagerInterface $entityManager, Request $request,
@@ -63,8 +33,8 @@ class MessageController extends AbstractController
         $form = $this->createForm(MessageType::class, $newMessage);
 
         $selectedUser = $userRepository->find($id);
-
         $currentUser = $this->getUser();
+
         $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
 
         $form->handleRequest($request);
@@ -77,13 +47,17 @@ class MessageController extends AbstractController
 
             $entityManager->persist($newMessage);
             $entityManager->flush();
-
             // Publish real-time update to Mercure hub
-                $update = new Update(
-                    '/dialog/'.$id, // Use a unique topic for this dialog
-                    json_encode(['message' => $newMessage->getContent()])
-                );
-                $hub->publish($update);
+            $senderUpdate = new Update(
+                '/dialog/user/'.$currentUser->getId(),
+                json_encode(['message' => $newMessage->getContent()])
+            );
+            $recipientUpdate = new Update(
+                '/dialog/user/'.$selectedUser->getId(),
+                json_encode(['message' => $newMessage->getContent()])
+            );
+            $hub->publish($senderUpdate);
+            $hub->publish($recipientUpdate);
 
             // Redirect or show some success messages
             return $this->redirectToRoute('app_dialog', ['id' => $id]);
