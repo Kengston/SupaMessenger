@@ -8,6 +8,7 @@ use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\HubInterface;
@@ -27,7 +28,7 @@ class MessageController extends AbstractController
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
     public function dialog(UserRepository $userRepository, MessageRepository $messageRepository,
                            int $id, EntityManagerInterface $entityManager, Request $request,
-                           HubInterface $hub): Response
+                           PublisherInterface $publisher): Response
     {
         $newMessage = new Message();
         $form = $this->createForm(MessageType::class, $newMessage);
@@ -47,17 +48,19 @@ class MessageController extends AbstractController
 
             $entityManager->persist($newMessage);
             $entityManager->flush();
+
+
             // Publish real-time update to Mercure hub
-            $senderUpdate = new Update(
-                '/dialog/user/'.$currentUser->getId(),
-                json_encode(['message' => $newMessage->getContent()])
-            );
-            $recipientUpdate = new Update(
-                '/dialog/user/'.$selectedUser->getId(),
-                json_encode(['message' => $newMessage->getContent()])
-            );
-            $hub->publish($senderUpdate);
-            $hub->publish($recipientUpdate);
+//            $senderUpdate = new Update(
+//                '/dialog/user/'.$currentUser->getId(),
+//                json_encode(['message' => $newMessage->getContent()])
+//            );
+//            $recipientUpdate = new Update(
+//                '/dialog/user/'.$selectedUser->getId(),
+//                json_encode(['message' => $newMessage->getContent()])
+//            );
+//            $publisher($senderUpdate);
+//            $publisher($recipientUpdate);
 
             // Redirect or show some success messages
             return $this->redirectToRoute('app_dialog', ['id' => $id]);
@@ -69,5 +72,29 @@ class MessageController extends AbstractController
             'messageForm' => $form->createView(),
             'id' => $id
         ]);
+    }
+
+    #[Route('/user/dialog/{id}/updates', name: 'fetch_dialog_updates')]
+    public function fetchUpdates(int $id, MessageRepository $messageRepository, UserRepository $userRepository): JsonResponse
+    {
+        // Get the users
+        $currentUser = $this->getUser();
+        $selectedUser = $userRepository->find($id);
+
+        // Fetch messages for the specified dialog ID from the repository
+        $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
+
+        // Transform messages into the desired format
+        $formattedMessages = [];
+        foreach ($messages as $message) {
+            $formattedMessages[] = [
+                'sender' => $message->getSender()->getUsername(),
+                'content' => $message->getContent(),
+                // Add any other message attributes you need
+            ];
+        }
+
+        // Return the messages as JSON response
+        return $this->json($formattedMessages);
     }
 }

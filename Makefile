@@ -1,4 +1,2 @@
 mercure_server:
-	MERCURE_PUBLISHER_JWT_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.isrXgf3K34RtyNfLu8rO7rR-uUVbd6hl_l6K31yEvZ0' \
-    MERCURE_SUBSCRIBER_JWT_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.isrXgf3K34RtyNfLu8rO7rR-uUVbd6hl_l6K31yEvZ0' \
-    ./mercure run
+	JWT_KEY=jopa ADDR=localhost:3000 ALLOW_ANONYMOUS=1 CORS_ALLOWED_ORIGINS=http://localhost:8000 ./bin/mercure

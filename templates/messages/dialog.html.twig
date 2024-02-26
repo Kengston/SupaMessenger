@@ -4,7 +4,7 @@
     <h1>Dialog with {{ selectedUser.username }}</h1>
 
     <div>
-        <ul>
+        <ul id="message-list">
             {% for message in messages %}
                 <li>
                     <strong>{{ message.sender.username }}</strong>: {{ message.content }}
@@ -24,22 +24,47 @@
     {{ form_end(messageForm) }}
 {% endblock %}
 
-    {% block javascripts %}
-        <script>
-            const dialogId = {{ id|json_encode|raw }};
+{% block javascripts %}
+    <script>
+        function fetchUpdates() {
+            // Fetch updates from the server using an AJAX request
+            fetch("{{ path('fetch_dialog_updates', { 'id': id }) }}") // Corrected route name
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the received data and update the UI
+                    const messageList = document.getElementById('message-list');
+                    messageList.innerHTML = ''; // Clear existing messages
+                    data.forEach(message => {
+                        const newMessage = document.createElement('li');
+                        newMessage.innerHTML = `<strong>${message.sender}</strong>: ${message.content}`; // Access message attributes directly
+                        messageList.appendChild(newMessage);
+                    });
+                })
+                .catch(error => console.error('Error fetching updates:', error));
+        }
 
-            // Subscribe to the Mercure hub for real-time updates
-            const eventSource = new EventSource("{{ mercure('/dialog/' ~ id)|escape('js') }}");
+        // Fetch updates immediately when the page loads
+        fetchUpdates();
 
-            // Handle incoming messages
-            eventSource.onmessage = function(event) {
-                console.log('jopa')
-                const data = JSON.parse(event.data);
-                // Update the UI with the new message
-                const messageList = document.getElementById('message-list');
-                const newMessage = document.createElement('li');
-                newMessage.innerHTML = `<strong>${data.sender.username}</strong>: ${data.content}`;
-                messageList.appendChild(newMessage);
-            };
-        </script>
-    {% endblock %}
+        // Fetch updates every 5 seconds (adjust this interval as needed)
+        setInterval(fetchUpdates, 500);
+    </script>
+{#   Mercure logic     #}
+{#        <script>#}
+{#            const dialogId = {{ id|json_encode|raw }};#}
+
+{#            // Subscribe to the Mercure hub for real-time updates#}
+{#            const eventSource = new EventSource("{{ mercure('/dialog/' ~ id)|escape('js') }}");#}
+
+{#            // Handle incoming messages#}
+{#            eventSource.onmessage = function(event) {#}
+{#                console.log('jopa')#}
+{#                const data = JSON.parse(event.data);#}
+{#                // Update the UI with the new message#}
+{#                const messageList = document.getElementById('message-list');#}
+{#                const newMessage = document.createElement('li');#}
+{#                newMessage.innerHTML = `<strong>${data.sender.username}</strong>: ${data.content}`;#}
+{#                messageList.appendChild(newMessage);#}
+{#            };#}
+{#        </script>#}
+{% endblock %}
