@@ -1,8 +1,7 @@
 mercure:
+    enable_profiler: '%kernel.debug%'
     hubs:
         default:
-            url: 'https://localhost/.well-known/mercure'
-            public_url: 'https://localhost/.well-known/mercure'
-            jwt:
-                secret: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOlsiKiJdfX0.isrXgf3K34RtyNfLu8rO7rR-uUVbd6hl_l6K31yEvZ0'
-                publish: '*'
+            url: '%env(MERCURE_PUBLISH_URL)%'
+            jwt: '%env(MERCURE_JWT_TOKEN)%'
+
