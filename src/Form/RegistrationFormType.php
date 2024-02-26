@@ -44,7 +44,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
-                        'messages' => 'Please enter a password',
+                        'message' => 'Please enter a password',
                     ]),
                     new Length([
                         'min' => 6,
