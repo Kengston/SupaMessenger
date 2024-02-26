@@ -1,0 +1,44 @@
+{% block title %}Dialog with {{ selectedUser.username }}{% endblock %}
+
+{% block body %}
+    <h1>Dialog with {{ selectedUser.username }}</h1>
+
+    <div>
+        <ul>
+            {% for message in messages %}
+                <li>
+                    <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>Send a Message</h2>
+
+    {{ form_start(messageForm) }}
+    {{ form_row(messageForm.content) }}
+
+    <button type="submit" class="btn btn-primary">Send</button>
+    {{ form_end(messageForm) }}
+{% endblock %}
+
+    {% block javascripts %}
+        <script>
+            const dialogId = {{ id|json_encode|raw }};
+
+            // Subscribe to the Mercure hub for real-time updates
+            const eventSource = new EventSource("{{ mercure('/dialog/' ~ id)|escape('js') }}");
+
+            // Handle incoming messages
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                // Update the UI with the new message
+                const messageList = document.getElementById('message-list');
+                const newMessage = document.createElement('li');
+                newMessage.innerHTML = `<strong>${data.sender.username}</strong>: ${data.content}`;
+                messageList.appendChild(newMessage);
+            };
+        </script>
+    {% endblock %}
