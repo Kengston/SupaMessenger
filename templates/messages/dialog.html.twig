@@ -1,4 +1,10 @@
-{% block title %}{% if selectedUser %}Dialog with {{ selectedUser.username }}{% else %}<h1>Select a User to start a dialog</h1>{% endif %}{% endblock %}
+{% block title %}
+    {% if selectedUser %}
+        Dialog with {{ selectedUser.username }}
+    {% else %}
+        <h1>Select a User to start a dialog</h1>
+    {% endif %}
+{% endblock %}
 {% block body %}
     <div class="container">
         <div class="row">
