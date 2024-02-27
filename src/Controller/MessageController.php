@@ -4,51 +4,39 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
-use App\Repository\MessageRepository;
+use App\Service\MessageService;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
-use Doctrine\ORM\EntityManagerInterface;
 
 class MessageController extends AbstractController
 {
     private $userRepository;
+    private $messageService;
 
-    public function __contruct(UserRepository $userRepository) {
+    public function __construct(UserRepository $userRepository, MessageService $messageService)
+    {
         $this->userRepository = $userRepository;
+        $this->messageService = $messageService;
     }
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
-    public function dialog(UserRepository $userRepository, MessageRepository $messageRepository,
-                           int $id, EntityManagerInterface $entityManager, Request $request,
-                           PublisherInterface $publisher): Response
+    public function dialog(int $id, Request $request, PublisherInterface $publisher): Response
     {
-        $newMessage = new Message();
-        $form = $this->createForm(MessageType::class, $newMessage);
-
-        $selectedUser = $userRepository->find($id);
+        $form = $this->createForm(MessageType::class, new Message());
+        $selectedUser = $this->userRepository->find($id);
         $currentUser = $this->getUser();
-
-        $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
+        $messages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // Set user as the sender
-            $newMessage->setSender($currentUser);
-            $newMessage->setRecipient($selectedUser);
-            $newMessage->setCreatedAt(new \DateTimeImmutable());
-
-            $entityManager->persist($newMessage);
-            $entityManager->flush();
-
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser,
+                                                            $form->getData()->getContent());
 
             // Publish real-time update to Mercure hub
 //            $senderUpdate = new Update(
@@ -75,24 +63,11 @@ class MessageController extends AbstractController
     }
 
     #[Route('/user/dialog/{id}/updates', name: 'fetch_dialog_updates')]
-    public function fetchUpdates(int $id, MessageRepository $messageRepository, UserRepository $userRepository): JsonResponse
+    public function fetchUpdates(int $id): JsonResponse
     {
-        // Get the users
         $currentUser = $this->getUser();
-        $selectedUser = $userRepository->find($id);
-
-        // Fetch messages for the specified dialog ID from the repository
-        $messages = $messageRepository->findDialogMessages($currentUser, $selectedUser);
-
-        // Transform messages into the desired format
-        $formattedMessages = [];
-        foreach ($messages as $message) {
-            $formattedMessages[] = [
-                'sender' => $message->getSender()->getUsername(),
-                'content' => $message->getContent(),
-                // Add any other message attributes you need
-            ];
-        }
+        $selectedUser = $this->userRepository->find($id);
+        $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
 
         // Return the messages as JSON response
         return $this->json($formattedMessages);
