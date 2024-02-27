@@ -26,12 +26,12 @@ class MessageController extends AbstractController
     }
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
-    public function dialog(int $id, Request $request, PublisherInterface $publisher): Response
+    public function dialog(int $id = null, Request $request, PublisherInterface $publisher): Response
     {
         $form = $this->createForm(MessageType::class, new Message());
-        $selectedUser = $this->userRepository->find($id);
+        $selectedUser = $id ? $this->userRepository->find($id) : null;
         $currentUser = $this->getUser();
-        $messages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
+        $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -51,12 +51,15 @@ class MessageController extends AbstractController
 //            $publisher($recipientUpdate);
 
             // Redirect or show some success messages
-            return $this->redirectToRoute('app_dialog', ['id' => $id]);
+            return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
+
+        $users = $this->userRepository->findAll();
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
             'messages' => $messages,
+            'users' => $users,
             'messageForm' => $form->createView(),
             'id' => $id
         ]);
