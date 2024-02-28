@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="flex h-screen bg-gray-200 text-red-600">
+    <div class="flex h-screen bg-gray-200 text-black-600">
         <div class="overflow-auto w-1/4 bg-white border-r p-5">
             <h1 class="text-lg font-bold mb-5 text-center">Select a User to start a dialog</h1>
             <ul id="user-list" class="space-y-5">
@@ -24,7 +24,10 @@
                 <h1 class="text-lg font-bold py-5 px-6 border-b text-center">{{ selectedUser.username }}</h1>
                 <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5">
                     {% for message in messages %}
-                        <div class="message-item py-2 px-6 rounded-lg max-w-lg {% if message.sender == selectedUser.username %}ml-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% else %}mr-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft{% endif %}">
+                        <div class="message-item py-2 px-6 rounded-lg max-w-lg
+                            {% if message.sender == selectedUser.username %}
+                                mr-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft
+                            {% else %}ml-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% endif %}">
                             <div class="font-semibold">{{ message.sender }}</div>
                             <div>{{ message.content }}</div>
                         </div>
@@ -47,23 +50,36 @@
 {% block javascripts %}
     {% if selectedUser %}
         <script>
+            // Store the ids of the messages that have been appended to the dialog.
+            const existingMessageIds = new Set();
+
             function fetchUpdates() {
-                console.log(selectedUser);
                 // Fetch updates from the server using an AJAX request
                 fetch("{{ path('fetch_dialog_updates', { 'id': selectedUser ? selectedUser.id : null }) }}")
                     .then(response => response.json())
                     .then(data => {
                         // Handle the received data and update the UI
                         const messageList = document.getElementById('message-list');
-                        messageList.innerHTML = ''; // Clear existing messages
+
+                        // Only Append new messages.
                         data.forEach(message => {
+                            // If the message already exists in the dialog, do not append it.
+                            if (existingMessageIds.has(message.id)) {
+                                return;
+                            }
+
+                            // Add the message id to the set of existing message ids.
+                            existingMessageIds.add(message.id);
+
                             const newMessage = document.createElement('div');
                             newMessage.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg');
+
                             if (message.sender === '{{ selectedUser.username }}') {
-                                newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
-                            } else {
                                 newMessage.classList.add('mr-auto', 'bg-gray-100', 'text-gray-800', 'animate__animated', 'animate__fadeInLeft');
+                            } else {
+                                newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
                             }
+
                             newMessage.innerHTML = `<div class="font-semibold">${message.sender}</div><div>${message.content}</div>`;
                             messageList.appendChild(newMessage);
                         });
@@ -75,7 +91,7 @@
             fetchUpdates();
 
             // Fetch updates every 5 seconds (adjust this interval as needed)
-            setInterval(fetchUpdates, 500);
+            setInterval(fetchUpdates, 5000);
         </script>
         {#   Mercure logic     #}
         {#        <script>#}

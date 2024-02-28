@@ -58,6 +58,7 @@ class MessageController extends AbstractController
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
+            'currentUser' => $currentUser,
             'messages' => $messages,
             'users' => $users,
             'messageForm' => $form->createView(),
