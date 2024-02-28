@@ -1,91 +1,115 @@
+{% extends 'base.html.twig' %}
+
 {% block title %}
     {% if selectedUser %}
         Dialog with {{ selectedUser.username }}
     {% else %}
-        <h1>Select a User to start a dialog</h1>
+        Select a User to start a dialog
     {% endif %}
 {% endblock %}
+
 {% block body %}
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h1>Select a User to start a dialog</h1>
-                <ul id="user-list">
-                    {% for user in users %}
-                        <li><a href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            {% if selectedUser %}
-                <div class="col-md-8">
-                    <h1>Dialog with {{ selectedUser.username }}</h1>
-                    <div>
-                        <ul id="message-list">
-                            {% for message in messages %}
-                                <li>
-                                    <strong>{{ message.sender }}</strong>: {{ message.content }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <hr>
-
-                    <h2>Send a Message</h2>
-                    {{ form_start(messageForm) }}
-                    {{ form_row(messageForm.content) }}
-                    <button type="submit" class="btn btn-primary">Send</button>
-                    {{ form_end(messageForm) }}
-                </div>
-            {% endif %}
+    <div class="flex h-screen bg-gray-200 text-black-600">
+        <div class="overflow-auto w-1/4 bg-white border-r p-5">
+            <h1 class="text-lg font-bold mb-5 text-center">Select a User to start a dialog</h1>
+            <ul id="user-list" class="space-y-5">
+                {% for user in users %}
+                    <li class="animate__animated animate__fadeIn"><a class="block py-2 px-6 hover:bg-gray-200 rounded-lg" href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a></li>
+                {% endfor %}
+            </ul>
         </div>
+
+        {% if selectedUser %}
+            <div class="flex-1 flex flex-col">
+                <h1 class="text-lg font-bold py-5 px-6 border-b text-center">{{ selectedUser.username }}</h1>
+                <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5">
+                    {% for message in messages %}
+                        <div class="message-item py-2 px-6 rounded-lg max-w-lg
+                            {% if message.sender == selectedUser.username %}
+                                mr-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft
+                            {% else %}ml-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% endif %}">
+                            <div class="font-semibold">{{ message.sender }}</div>
+                            <div>{{ message.content }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form class="border-t py-4 px-6" action="" method="post">
+                    {{ form_start(messageForm) }}
+                    <div class="flex space-x-2">
+                        {{ form_row(messageForm.content, {'attr': {'class': 'form-input flex-1 rounded-lg py-2 px-3'}}) }}
+                        <button type="submit" class="px-5 py-2 bg-blue-500 text-white rounded-lg">Send</button>
+                    </div>
+                    {{ form_end(messageForm) }}
+                </form>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {% if selectedUser %}
-    <script>
-        function fetchUpdates() {
-            // Fetch updates from the server using an AJAX request
-            fetch("{{ path('fetch_dialog_updates', { 'id': selectedUser ? selectedUser.id : null }) }}")
-                .then(response => response.json())
-                .then(data => {
-                    // Handle the received data and update the UI
-                    const messageList = document.getElementById('message-list');
-                    messageList.innerHTML = ''; // Clear existing messages
-                    data.forEach(message => {
-                        const newMessage = document.createElement('li');
-                        newMessage.innerHTML = `<strong>${message.sender}</strong>: ${message.content}`; // Access message attributes directly
-                        messageList.appendChild(newMessage);
-                    });
-                })
-                .catch(error => console.error('Error fetching updates:', error));
-        }
+        <script>
+            // Store the ids of the messages that have been appended to the dialog.
+            const existingMessageIds = new Set();
 
-        // Fetch updates immediately when the page loads
-        fetchUpdates();
+            function fetchUpdates() {
+                // Fetch updates from the server using an AJAX request
+                fetch("{{ path('fetch_dialog_updates', { 'id': selectedUser ? selectedUser.id : null }) }}")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the received data and update the UI
+                        const messageList = document.getElementById('message-list');
 
-        // Fetch updates every 5 seconds (adjust this interval as needed)
-        setInterval(fetchUpdates, 500);
-    </script>
-{#   Mercure logic     #}
-{#        <script>#}
-{#            const dialogId = {{ id|json_encode|raw }};#}
+                        // Only Append new messages.
+                        data.forEach(message => {
+                            // If the message already exists in the dialog, do not append it.
+                            if (existingMessageIds.has(message.id)) {
+                                return;
+                            }
 
-{#            // Subscribe to the Mercure hub for real-time updates#}
-{#            const eventSource = new EventSource("{{ mercure('/dialog/' ~ id)|escape('js') }}");#}
+                            // Add the message id to the set of existing message ids.
+                            existingMessageIds.add(message.id);
 
-{#            // Handle incoming messages#}
-{#            eventSource.onmessage = function(event) {#}
-{#                console.log('jopa')#}
-{#                const data = JSON.parse(event.data);#}
-{#                // Update the UI with the new message#}
-{#                const messageList = document.getElementById('message-list');#}
-{#                const newMessage = document.createElement('li');#}
-{#                newMessage.innerHTML = `<strong>${data.sender.username}</strong>: ${data.content}`;#}
-{#                messageList.appendChild(newMessage);#}
-{#            };#}
-{#        </script>#}
+                            const newMessage = document.createElement('div');
+                            newMessage.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg');
+
+                            if (message.sender === '{{ selectedUser.username }}') {
+                                newMessage.classList.add('mr-auto', 'bg-gray-100', 'text-gray-800', 'animate__animated', 'animate__fadeInLeft');
+                            } else {
+                                newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
+                            }
+
+                            newMessage.innerHTML = `<div class="font-semibold">${message.sender}</div><div>${message.content}</div>`;
+                            messageList.appendChild(newMessage);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching updates:', error));
+            }
+
+            // Fetch updates immediately when the page loads
+            fetchUpdates();
+
+            // Fetch updates every 5 seconds (adjust this interval as needed)
+            setInterval(fetchUpdates, 5000);
+        </script>
+        {#   Mercure logic     #}
+        {#        <script>#}
+        {#            const dialogId = {{ id|json_encode|raw }};#}
+
+        {#            // Subscribe to the Mercure hub for real-time updates#}
+        {#            const eventSource = new EventSource("{{ mercure('/dialog/' ~ id)|escape('js') }}");#}
+
+        {#            // Handle incoming messages#}
+        {#            eventSource.onmessage = function(event) {#}
+        {#                console.log('jopa')#}
+        {#                const data = JSON.parse(event.data);#}
+        {#                // Update the UI with the new message#}
+        {#                const messageList = document.getElementById('message-list');#}
+        {#                const newMessage = document.createElement('li');#}
+        {#                newMessage.innerHTML = `<strong>${data.sender.username}</strong>: ${data.content}`;#}
+        {#                messageList.appendChild(newMessage);#}
+        {#            };#}
+        {#        </script>#}
     {% endif %}
 {% endblock %}
