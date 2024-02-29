@@ -28,6 +28,7 @@ class MessageController extends AbstractController
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
     public function dialog(int $id = null, Request $request, PublisherInterface $publisher): Response
     {
+
         $form = $this->createForm(MessageType::class, new Message());
         $selectedUser = $id ? $this->userRepository->find($id) : null;
         $currentUser = $this->getUser();
@@ -39,16 +40,16 @@ class MessageController extends AbstractController
                                                             $form->getData()->getContent());
 
             // Publish real-time update to Mercure hub
-//            $senderUpdate = new Update(
-//                '/dialog/user/'.$currentUser->getId(),
-//                json_encode(['message' => $newMessage->getContent()])
-//            );
-//            $recipientUpdate = new Update(
-//                '/dialog/user/'.$selectedUser->getId(),
-//                json_encode(['message' => $newMessage->getContent()])
-//            );
-//            $publisher($senderUpdate);
-//            $publisher($recipientUpdate);
+            $senderUpdate = new Update(
+                '/dialog/user/'.$currentUser->getId(),
+                json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
+            );
+            $recipientUpdate = new Update(
+                '/dialog/user/'.$selectedUser->getId(),
+                json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
+            );
+            $publisher($senderUpdate);
+            $publisher($recipientUpdate);
 
             // Redirect or show some success messages
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
@@ -72,7 +73,6 @@ class MessageController extends AbstractController
         $currentUser = $this->getUser();
         $selectedUser = $this->userRepository->find($id);
         $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
-
         // Return the messages as JSON response
         return $this->json($formattedMessages);
     }
