@@ -9,6 +9,7 @@
 .message-item {
     opacity: 0;
     animation: fadeInUp 0.5s ease forwards;
+
 }
 
 @keyframes fadeInUp {
