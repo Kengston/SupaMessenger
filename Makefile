@@ -1,2 +1,22 @@
-mercure_server:
-	JWT_KEY=jopa ADDR=localhost:3000 ALLOW_ANONYMOUS=1 CORS_ALLOWED_ORIGINS=http://localhost:8000 ./bin/mercure
+start:
+	symfony serve --no-tls
+
+dc_build:
+	docker-compose up
+
+dc_start:
+	docker-compose start
+
+dc_stop:
+	docker-compose stop
+
+dc_up:
+	docker-compose up -d --remove-orphans
+
+dc_ps:
+	docker-compose ps
+
+dc_logs:
+	docker-compose -f
+
+
