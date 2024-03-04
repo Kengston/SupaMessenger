@@ -9,32 +9,45 @@
 {% endblock %}
 
 {% block body %}
-    <div class="flex h-screen bg-gray-200 text-black-600">
-        <div class="overflow-auto w-1/4 bg-white border-r p-5">
-            <h1 class="text-lg font-bold mb-5 text-center">Select a User to start a dialog</h1>
-            <ul id="user-list" class="space-y-5">
-                {% for user in users %}
-                    <li class="animate__animated animate__fadeIn"><a class="block py-2 px-6 hover:bg-gray-200 rounded-lg" href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a></li>
-                {% endfor %}
-            </ul>
+    <div class="flex h-screen bg-gray-200 text-black-600 relative">
+        <!-- Sidebar -->
+        <div class="overflow-auto w-1/4 bg-white border-r">
+            <div class="p-5">
+                <h1 class="text-lg font-bold mb-5 text-center">Select a User to start a dialog</h1>
+                <ul id="user-list" class="space-y-5">
+                    {% for user in users %}
+                        <li class="animate__animated animate__fadeIn">
+                            <a class="block py-2 px-6 hover:bg-gray-200 rounded-lg" href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
+        <!-- Main Content -->
         {% if selectedUser %}
             <div class="flex-1 flex flex-col">
-                <h1 class="text-lg font-bold py-5 px-6 border-b text-center">{{ selectedUser.username }}</h1>
-                <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5 ">
+                <!-- Header -->
+                <div class="border-b p-5 flex justify-between items-center bg-white">
+                    <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
+                    <a href="{{ path('app_logout') }}" class="text-blue-500 hover:underline ml-auto"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+
+                <!-- Message List -->
+                <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5">
                     {% for message in messages %}
                         <div class="message-item py-2 px-6 rounded-lg max-w-lg
                             {% if message.sender == selectedUser.username %}
-                                mr-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft
-                            {% else %}ml-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% endif %}">
+                                ml-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft
+                            {% else %}mr-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% endif %}">
                             <div class="font-semibold">{{ message.sender }}</div>
                             <div>{{ message.content }}</div>
                         </div>
                     {% endfor %}
                 </div>
 
-                <form class="border-t py-4 px-6" action="" method="post">
+                <!-- Message Form -->
+                <form class="border-t p-5" action="" method="post">
                     {{ form_start(messageForm) }}
                     <div class="flex space-x-2">
                         {{ form_row(messageForm.content, {'attr': {'class': 'form-input flex-1 rounded-lg py-2 px-3'}}) }}
@@ -49,6 +62,7 @@
 
 {% block javascripts %}
     {% if selectedUser %}
+
         <script>
             const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");
 
