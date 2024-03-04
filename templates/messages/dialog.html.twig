@@ -39,7 +39,9 @@
                         <div class="message-item py-2 px-6 rounded-lg max-w-lg
                             {% if message.sender == selectedUser.username %}
                                 ml-auto bg-gray-100 text-gray-800 animate__animated animate__fadeInLeft
-                            {% else %}mr-auto bg-blue-400 text-white animate__animated animate__fadeInRight{% endif %}">
+                            {% else %}
+                                mr-auto bg-blue-400 text-white animate__animated animate__fadeInRight
+                            {% endif %}">
                             <div class="font-semibold">{{ message.sender }}</div>
                             <div>{{ message.content }}</div>
                         </div>
@@ -51,7 +53,7 @@
                     {{ form_start(messageForm) }}
                     <div class="flex space-x-2">
                         {{ form_row(messageForm.content, {'attr': {'class': 'form-input flex-1 rounded-lg py-2 px-3'}}) }}
-                        <button type="submit" class="px-5 py-2 bg-blue-500 text-white rounded-lg">Send</button>
+                        <button type="submit" class="px-5 py-2 bg-blue-500 text-white rounded-lg"><i class="fa-regular fa-paper-plane"></i></button>
                     </div>
                     {{ form_end(messageForm) }}
                 </form>

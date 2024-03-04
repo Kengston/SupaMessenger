@@ -14,8 +14,9 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('content')
-        ;
+            ->add('content', null, [
+                'label' => false, // This will remove the label for the 'content' field
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
