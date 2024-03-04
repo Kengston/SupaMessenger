@@ -40,8 +40,10 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('password', PasswordType::class, [
+                'label' => false,
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
+                'attr' => ['autocomplete' => 'new-password',
+                    'placeholder' => 'Password'],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a password',
