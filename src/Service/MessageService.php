@@ -34,6 +34,7 @@ class MessageService
 
         foreach ($messages as $message) {
             $formattedMessages[] = [
+                'id' => $message->getId(),
                 'sender' => $message->getSender()->getUsername(),
                 'content' => $message->getContent(),
             ];
