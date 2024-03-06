@@ -19,6 +19,9 @@ class Message
     #[ORM\Column(type: "datetime_immutable")]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: "boolean")]
+    private ?bool $deleted = false;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
@@ -53,6 +56,18 @@ class Message
     {
         $this->createdAt = $createdAt;
 
+        return $this;
+    }
+
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted(bool $delete):
+    self
+    {
+        $this->deleted = $delete;
         return $this;
     }
 
