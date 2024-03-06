@@ -6,6 +6,7 @@ use App\Entity\Message;
 use App\Entity\User;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use http\Env\Response;
 
 class MessageService
 {
@@ -18,31 +19,6 @@ class MessageService
         $this->messageRepository = $messageRepository;
     }
 
-    public function createAndPersist(User $sender, User $recipient, string $content): Message
-    {
-        $newMessage = $this->createMessage($sender, $recipient, $content);
-        $this->entityManager->persist($newMessage);
-        $this->entityManager->flush();
-
-        return $newMessage;
-    }
-
-    public function getFormattedDialogMessages(User $currentUser, User $selectedUser): array
-    {
-        $messages = $this->messageRepository->findDialogMessages($currentUser, $selectedUser);
-        $formattedMessages = [];
-
-        foreach ($messages as $message) {
-            $formattedMessages[] = [
-                'id' => $message->getId(),
-                'sender' => $message->getSender()->getUsername(),
-                'content' => $message->getContent(),
-            ];
-        }
-
-        return $formattedMessages;
-    }
-
     public function createMessage(User $sender, User $recipient, string $content): Message
     {
         $message = new Message();
@@ -53,4 +29,41 @@ class MessageService
 
         return $message;
     }
+
+    public function createAndPersist(User $sender, User $recipient, string $content): Message
+    {
+        $newMessage = $this->createMessage($sender, $recipient, $content);
+        $this->entityManager->persist($newMessage);
+        $this->entityManager->flush();
+
+        return $newMessage;
+    }
+
+    public function deleteMessage(Message $message) : void {
+        $message->SetDeleted(true);
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+    }
+
+    public function getFormattedDialogMessages(User $currentUser, User $selectedUser): array
+    {
+        $messages = $this->messageRepository->findDialogMessages($currentUser, $selectedUser);
+        $formattedMessages = [];
+
+        foreach ($messages as $message) {
+            if (!$message->getDeleted() and $message !== null) { // if the message is not marked as deleted
+                $formattedMessages[] = [
+                    'id' => $message->getId(),
+                    'sender' => $message->getSender()->getUsername(),
+                    'content' => $message->getContent(),
+                ];
+            }
+        }
+
+        return $formattedMessages;
+    }
+
+
+
+
 }

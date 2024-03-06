@@ -34,6 +34,15 @@ class MessageRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findMessageById($value): ?Message
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.id = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return Message[] Returns an array of Message objects
 //     */

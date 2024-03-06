@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
+use App\Repository\MessageRepository;
 use App\Service\MessageService;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,16 +14,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
+use function PHPUnit\Framework\throwException;
 
 class MessageController extends AbstractController
 {
     private $userRepository;
     private $messageService;
 
-    public function __construct(UserRepository $userRepository, MessageService $messageService)
+    private $messageRepository;
+
+    public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository)
     {
         $this->userRepository = $userRepository;
         $this->messageService = $messageService;
+        $this->messageRepository = $messageRepository;
     }
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
@@ -75,5 +80,19 @@ class MessageController extends AbstractController
         $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
         // Return the messages as JSON response
         return $this->json($formattedMessages);
+    }
+
+    #[Route('user/dialog/message/delete/{messageId}', name: 'app_delete_message')]
+    public function delete($messageId, PublisherInterface $publisher)
+    {
+        $message = $this->messageRepository->findMessageById($messageId);
+
+        if (!$message) {
+            throw $this->createNotFoundException('Message not found');
+        }
+
+        $this->messageService->deleteMessage($message);
+
+        return $this->redirectToRoute('app_dialog', ['id' => $message->getRecipient()->getId()]);
     }
 }
