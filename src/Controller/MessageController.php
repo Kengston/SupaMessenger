@@ -41,10 +41,8 @@ class MessageController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser,
-                                                            $form->getData()->getContent());
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent());
 
-            // Publish real-time update to Mercure hub
             $senderUpdate = new Update(
                 '/dialog/user/'.$currentUser->getId(),
                 json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
@@ -93,6 +91,13 @@ class MessageController extends AbstractController
 
         $this->messageService->deleteMessage($message);
 
+        $update = new Update(
+            '/dialog/user/'.$message->getRecipient()->getId(),
+            json_encode(['delete' => $message->getId()])
+        );
+        $publisher($update);
+
         return $this->redirectToRoute('app_dialog', ['id' => $message->getRecipient()->getId()]);
     }
+
 }
