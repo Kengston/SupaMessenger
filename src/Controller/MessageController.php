@@ -41,10 +41,8 @@ class MessageController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser,
-                                                            $form->getData()->getContent());
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent());
 
-            // Publish real-time update to Mercure hub
             $senderUpdate = new Update(
                 '/dialog/user/'.$currentUser->getId(),
                 json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
@@ -78,7 +76,7 @@ class MessageController extends AbstractController
         $currentUser = $this->getUser();
         $selectedUser = $this->userRepository->find($id);
         $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
-        // Return the messages as JSON response
+
         return $this->json($formattedMessages);
     }
 
@@ -93,6 +91,39 @@ class MessageController extends AbstractController
 
         $this->messageService->deleteMessage($message);
 
+        $update = new Update(
+            '/dialog/user/'.$message->getRecipient()->getId(),
+            json_encode(['delete' => $message->getId()])
+        );
+        $publisher($update);
+
         return $this->redirectToRoute('app_dialog', ['id' => $message->getRecipient()->getId()]);
+    }
+
+    #[Route('user/dialog/message/edit/{messageId}', name: 'app_edit_message')]
+    public function edit($messageId, Request $request, PublisherInterface $publisher) : JsonResponse
+    {
+        $message = $this->messageRepository->findMessageById($messageId);
+
+        if ($message === null) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Message not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $message->setContent($data['content']);
+
+        $this->messageService->updateMessage($message);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => [
+                'id' => $message->getRecipient()->getId(),
+                'content' => $message->getContent(),
+            ]
+        ], Response::HTTP_OK);
     }
 }

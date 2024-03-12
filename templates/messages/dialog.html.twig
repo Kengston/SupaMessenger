@@ -84,24 +84,32 @@
 
     {% if selectedUser %}
         <script type="text/template" id="user-message-template">
-            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder'}} %}
+            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder'}} %}
         </script>
 
         <script type="text/template" id="other-message-template">
-            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder'}} %}
+            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder'}} %}
         </script>
 
 
         <script>
-
-            /* REFACTOR AFTER
             const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");
 
             eventSource.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 const messageList = document.getElementById('message-list');
+
+                if ('delete' in data) {
+                    const messageToDelete = document.querySelector(`[data-message-id="${data.delete}"]`);
+                    if (messageToDelete) {
+                        messageToDelete.parentNode.removeChild(messageToDelete);
+                    }
+                    return; // Stop further execution since this is a delete command.
+                }
+
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg');
+                newMessage.dataset.messageId = data.id;
 
                 if (data.sender === '{{ currentUser.username }}') {
                     newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
@@ -117,7 +125,7 @@
                 const messageList = document.getElementById('message-list');
                 messageList.scrollTop = messageList.scrollHeight;
             };
-            */
         </script>
+
     {% endif %}
 {% endblock %}

@@ -6,7 +6,6 @@ use App\Entity\Message;
 use App\Entity\User;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Env\Response;
 
 class MessageService
 {
@@ -39,6 +38,13 @@ class MessageService
         return $newMessage;
     }
 
+    public function updateMessage($message) : void
+    {
+        $message->setCreatedAt(new \DateTimeImmutable());
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+    }
+
     public function deleteMessage(Message $message) : void {
         $message->SetDeleted(true);
         $this->entityManager->persist($message);
@@ -51,12 +57,13 @@ class MessageService
         $formattedMessages = [];
 
         foreach ($messages as $message) {
-            if (!$message->getDeleted() and $message !== null) { // if the message is not marked as deleted
+            if (!$message->getDeleted() and $message !== null) {
                 $formattedMessages[] = [
                     'id' => $message->getId(),
                     'sender' => $message->getSender()->getUsername(),
                     'content' => $message->getContent(),
-                ];
+                    'createdAt' => $message->getCreatedAt()->format('H:i')
+                 ];
             }
         }
 
