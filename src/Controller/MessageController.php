@@ -76,7 +76,7 @@ class MessageController extends AbstractController
         $currentUser = $this->getUser();
         $selectedUser = $this->userRepository->find($id);
         $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
-        // Return the messages as JSON response
+
         return $this->json($formattedMessages);
     }
 
@@ -100,4 +100,30 @@ class MessageController extends AbstractController
         return $this->redirectToRoute('app_dialog', ['id' => $message->getRecipient()->getId()]);
     }
 
+    #[Route('user/dialog/message/edit/{messageId}', name: 'app_edit_message')]
+    public function edit($messageId, Request $request, PublisherInterface $publisher) : JsonResponse
+    {
+        $message = $this->messageRepository->findMessageById($messageId);
+
+        if ($message === null) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Message not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $message->setContent($data['content']);
+
+        $this->messageService->updateMessage($message);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => [
+                'id' => $message->getRecipient()->getId(),
+                'content' => $message->getContent(),
+            ]
+        ], Response::HTTP_OK);
+    }
 }

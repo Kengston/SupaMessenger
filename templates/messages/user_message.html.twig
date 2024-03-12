@@ -1,4 +1,3 @@
-
 <div class="message-item py-2 px-6 rounded-lg max-w-lg flex flex-col space-y-3
     mr-auto bg-gray-200 text-white animate__animated animate__fadeInRight" data-message-id="{{ message.id }}">
     <div class="flex items-start gap-2.5">
@@ -6,9 +5,14 @@
         <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ message.sender }}</span>
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ message.createdAt }}</span>
             </div>
-            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+            <p class="message-content text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+            <div class="message-edit-form hidden">
+                <input type="text" value="{{ message.content }}" id="small-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <button class="btn btn-submit">Submit</button>
+                <button class="btn btn-cancel">Cancel</button>
+            </div>
             <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span>
         </div>
         <button id="dropdownMenuIconButton_{{ message.id }}" data-dropdown-toggle="dropdownDots_{{ message.id }}" data-dropdown-placement="top" class="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50" type="button">
@@ -28,10 +32,78 @@
                     <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
                 </li>
                 <li>
+                    <a href="#" data-message-id="{{ message.id }}" class="message-edit-btn block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                </li>
+                <li>
                     <a href="message/delete/{{ message.id }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
                 </li>
             </ul>
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.message-edit-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); // prevent the default action of clicking a link
+            const messageId = this.dataset.messageId;
+            const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
+            const messageContent = messageItem.querySelector('.message-content');
+            const editForm = messageItem.querySelector('.message-edit-form');
+
+            // Toggle visibility between content and the edit form
+            messageContent.classList.toggle('hidden');
+            editForm.classList.toggle('hidden');
+
+            // Getting the submit and cancel buttons, and the edit input
+            const submitButton = editForm.querySelector('.btn-submit');
+            const cancelButton = editForm.querySelector('.btn-cancel');
+            const editInput = editForm.querySelector('input');
+
+            // Event listener for the 'Submit' button
+            submitButton.addEventListener('click', function(ev) {
+                ev.preventDefault();
+
+                const editedContent = editInput.value;
+                const messageId = messageItem.dataset.messageId;
+
+                // Send an AJAX request to the Symfony controller endpoint
+                fetch(`/user/dialog/message/edit/${messageId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', // Add this header to indicate an AJAX request
+                    },
+                    body: JSON.stringify({ content: editedContent }), // Send the edited content in the request body
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to update message');
+                        }
+                        // Update the message content and hide the form
+                        messageContent.textContent = editedContent;
+                        messageContent.classList.remove('hidden');
+                        editForm.classList.add('hidden');
+                    })
+                    .catch(error => {
+                        console.error('Error updating message:', error);
+                    });
+            });
+
+            // Event listener for the 'Cancel' button
+            cancelButton.addEventListener('click', function(ev) {
+                ev.preventDefault();
+
+                // Reset the input value and hide the form
+                editInput.value = messageContent.textContent;
+
+                messageContent.classList.remove('hidden');
+                editForm.classList.add('hidden');
+            });
+        });
+    });
+</script>
+
+
+
 

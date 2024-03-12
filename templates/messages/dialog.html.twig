@@ -84,11 +84,11 @@
 
     {% if selectedUser %}
         <script type="text/template" id="user-message-template">
-            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder'}} %}
+            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder'}} %}
         </script>
 
         <script type="text/template" id="other-message-template">
-            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder'}} %}
+            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder'}} %}
         </script>
 
 
@@ -126,5 +126,6 @@
                 messageList.scrollTop = messageList.scrollHeight;
             };
         </script>
+
     {% endif %}
 {% endblock %}
