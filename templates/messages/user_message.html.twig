@@ -2,16 +2,21 @@
     mr-auto bg-gray-200 text-white animate__animated animate__fadeInRight" data-message-id="{{ message.id }}">
     <div class="flex items-start gap-2.5">
         <img class="w-8 h-8 rounded-full" src="https://static.vecteezy.com/system/resources/previews/002/592/204/original/little-student-afro-boy-avatar-character-free-vector.jpg" alt="Jese image">
-        <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
+        <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100
+                    rounded-e-xl rounded-es-xl dark:bg-gray-700">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ message.sender }}</span>
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ message.createdAt }}</span>
             </div>
             <p class="message-content text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
             <div class="message-edit-form hidden">
-                <input type="text" value="{{ message.content }}" id="small-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <button class="btn btn-submit">Submit</button>
-                <button class="btn btn-cancel">Cancel</button>
+                <div class="flex items-center">
+                    <input type="text" value="{{ message.content }}" id="small-input" class="flex-grow block p-2 text-gray-900
+                    border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700
+                    dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <button class="btn btn-submit text-gray-900 ml-2"><i class="fa-solid fa-check"></i></button>
+                    <button class="btn btn-cancel text-gray-900 ml-2"><i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
                     {% if message.updatedAt is not null %}
@@ -21,7 +26,8 @@
                     {% endif %}
                 </span>
         </div>
-        <button id="dropdownMenuIconButton_{{ message.id }}" data-dropdown-toggle="dropdownDots_{{ message.id }}" data-dropdown-placement="top" class="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50" type="button">
+        <button id="dropdownMenuIconButton_{{ message.id }}" data-dropdown-toggle="dropdownDots_{{ message.id }}" data-dropdown-placement="top" class="inline-flex self-center
+        items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50" type="button">
             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
                 <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
             </svg>
@@ -63,9 +69,18 @@
             editForm.classList.toggle('hidden');
 
             // Getting the submit and cancel buttons, and the edit input
-            const submitButton = editForm.querySelector('.btn-submit');
-            const cancelButton = editForm.querySelector('.btn-cancel');
+            let submitButton = editForm.querySelector('.btn-submit');
+            let cancelButton = editForm.querySelector('.btn-cancel');
             const editInput = editForm.querySelector('input');
+
+            // Clone the submit and cancel buttons to remove existing event listeners
+            const newSubmitButton = submitButton.cloneNode(true);
+            submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+            submitButton = newSubmitButton;
+
+            const newCancelButton = cancelButton.cloneNode(true);
+            cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+            cancelButton = newCancelButton;
 
             // Event listener for the 'Submit' button
             submitButton.addEventListener('click', function(ev) {
