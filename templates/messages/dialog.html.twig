@@ -107,14 +107,24 @@
                     return; // Stop further execution since this is a delete command.
                 }
 
+                if ('edit' in data) {
+                    const messageToEdit = document.querySelector(`[data-message-id="${data.edit}"]`);
+                    if (messageToEdit) {
+                        console.log(data); // Should log the entire message element.
+                        const contentElement = messageToEdit.querySelector('p.text-sm');
+                        contentElement.textContent = data.editContent;
+                    }
+                    return;
+                }
+
                 const newMessage = document.createElement('div');
                 newMessage.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg');
                 newMessage.dataset.messageId = data.id;
 
                 if (data.sender === '{{ currentUser.username }}') {
-                    newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
-                } else {
                     newMessage.classList.add('mr-auto', 'bg-gray-100', 'text-gray-800', 'animate__animated', 'animate__fadeInLeft');
+                } else {
+                    newMessage.classList.add('ml-auto', 'bg-blue-400', 'text-white', 'animate__animated', 'animate__fadeInRight');
                 }
 
                 newMessage.innerHTML = `<div class="font-semibold">${data.sender}</div><div>${data.content}</div>`;
