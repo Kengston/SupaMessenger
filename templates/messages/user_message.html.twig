@@ -13,7 +13,13 @@
                 <button class="btn btn-submit">Submit</button>
                 <button class="btn btn-cancel">Cancel</button>
             </div>
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span>
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    {% if message.updatedAt is not null %}
+                        Edited at {{ message.updatedAt }}
+                    {% else %}
+                        Delivered
+                    {% endif %}
+                </span>
         </div>
         <button id="dropdownMenuIconButton_{{ message.id }}" data-dropdown-toggle="dropdownDots_{{ message.id }}" data-dropdown-placement="top" class="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50" type="button">
             <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
@@ -43,10 +49,11 @@
 </div>
 
 <script>
-    document.querySelectorAll('.message-edit-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault(); // prevent the default action of clicking a link
-            const messageId = this.dataset.messageId;
+    document.addEventListener('click', function(event) {
+        // Check if the clicked element is an edit button
+        if (event.target.classList.contains('message-edit-btn')) {
+            event.preventDefault(); // prevent the default action of clicking a link
+            const messageId = event.target.dataset.messageId;
             const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
             const messageContent = messageItem.querySelector('.message-content');
             const editForm = messageItem.querySelector('.message-edit-form');
@@ -100,7 +107,7 @@
                 messageContent.classList.remove('hidden');
                 editForm.classList.add('hidden');
             });
-        });
+        }
     });
 </script>
 

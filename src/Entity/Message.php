@@ -16,8 +16,11 @@ class Message
     #[ORM\Column(type: "string", length: 255)]
     private ?string $content = null;
 
-    #[ORM\Column(type: "datetime_immutable")]
+    #[ORM\Column(type: "datetime_immutable", options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?\DateTime $updatedAt = null;
 
     #[ORM\Column(type: "boolean")]
     private ?bool $deleted = false;
@@ -55,6 +58,18 @@ class Message
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
