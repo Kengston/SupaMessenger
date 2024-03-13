@@ -40,7 +40,8 @@ class MessageService
 
     public function updateMessage($message) : void
     {
-        $message->setCreatedAt(new \DateTimeImmutable());
+
+        $message->setUpdatedAt(new \DateTime());
         $this->entityManager->persist($message);
         $this->entityManager->flush();
     }
@@ -58,11 +59,18 @@ class MessageService
 
         foreach ($messages as $message) {
             if (!$message->getDeleted() and $message !== null) {
+                $createdAt = $message->getCreatedAt();
+                $createdAtFormatted = $createdAt ? $createdAt->format('H:i') : null;
+
+                $updatedAt = $message->getUpdatedAt();
+                $updatedAtFormatted = $updatedAt ? $updatedAt->format('H:i') : null;
+
                 $formattedMessages[] = [
                     'id' => $message->getId(),
                     'sender' => $message->getSender()->getUsername(),
                     'content' => $message->getContent(),
-                    'createdAt' => $message->getCreatedAt()->format('H:i')
+                    'createdAt' => $createdAtFormatted,
+                    'updatedAt' => $updatedAtFormatted
                  ];
             }
         }
