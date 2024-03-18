@@ -43,20 +43,37 @@ class MessageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent());
 
-            $senderUpdate = new Update(
-                '/dialog/user/'.$currentUser->getId(),
-                json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
-            );
-            $recipientUpdate = new Update(
-                '/dialog/user/'.$selectedUser->getId(),
-                json_encode(['sender' => $currentUser->getUsername(), 'content' => $newMessage->getContent()])
-            );
-            $publisher($senderUpdate);
-            $publisher($recipientUpdate);
+            if ($newMessage) {
+                $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
+                $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
 
-            // Redirect or show some success messages
+                $senderUpdate = new Update(
+                    '/dialog/user/'.$currentUser->getId(),
+                    json_encode([
+                        'sender' => $currentUser->getUsername(),
+                        'id' => $newMessage->getId(),
+                        'content' => $newMessage->getContent(),
+                        'updatedAt' => $updatedAt,
+                        'createdAt' => $createdAt
+                    ])
+                );
+                $recipientUpdate = new Update(
+                    '/dialog/user/'.$selectedUser->getId(),
+                    json_encode([
+                        'sender' => $currentUser->getUsername(),
+                        'id' => $newMessage->getId(),
+                        'content' => $newMessage->getContent(),
+                        'updatedAt' => $updatedAt,
+                        'createdAt' => $createdAt
+                    ])
+                );
+                $publisher($senderUpdate);
+                $publisher($recipientUpdate);
+            }
+
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
+
 
         $users = $this->userRepository->findAll();
 
