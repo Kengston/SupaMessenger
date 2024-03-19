@@ -8,7 +8,12 @@
     {% endif %}
 {% endblock %}
 
+{% block head %}
+
+{% endblock %}
+
 {% block body %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 
     <div class="flex h-screen bg-gray-200 text-black-600 relative">
@@ -250,11 +255,12 @@
                 // Adding dropdown menu logic
                 const dropdownButton = document.createElement('button');
                 dropdownButton.id = 'dropdownMenuIconButton_' + message.id;
-                dropdownButton.dataset.dropdownToggle = 'dropdownDots_' + message.id;
-                dropdownButton.dataset.dropdownPlacement = 'top';
-                dropdownButton.classList.add('inline-flex', 'self-center', 'items-center', 'p-2', 'text-sm', 'font-medium', 'text-center', 'text-gray-900', 'bg-gray-200', 'rounded-lg', 'hover:bg-gray-100', 'focus:ring-4', 'focus:outline-none', 'dark:text-white', 'focus:ring-gray-50');
+                dropdownButton.classList.add('inline-flex', 'self-center', 'items-center', 'p-2', 'text-sm', 'font-medium',
+                    'text-center', 'text-gray-900', 'bg-gray-200', 'rounded-lg', 'hover:bg-gray-100',
+                    'focus:ring-4', 'focus:outline-none', 'dark:text-white', 'focus:ring-gray-50');
                 dropdownButton.type = 'button';
 
+                // Creating and adding dropdown icon
                 const dropdownIcon = document.createElement('svg');
                 dropdownIcon.classList.add('h-4', 'text-gray-500', 'dark:text-gray-400');
                 dropdownIcon.setAttribute('aria-hidden', 'true');
@@ -263,14 +269,20 @@
                 dropdownIcon.setAttributeNS(null, 'viewBox', '0 0 4 15');
                 dropdownIcon.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>';
 
+                dropdownButton.appendChild(dropdownIcon);
+
+                // Creating dropdown menu
                 const dropdownMenu = document.createElement('div');
                 dropdownMenu.id = 'dropdownDots_' + message.id;
                 dropdownMenu.classList.add('z-10', 'hidden', 'bg-white', 'divide-y', 'divide-gray-100', 'rounded-lg', 'shadow', 'w-40');
-                dropdownMenu.dataset.popperPlacement = 'bottom'; // Add data-popper-placement attribute
+                dropdownMenu.dataset.popperPlacement = 'bottom';
 
+                dropdownButton.dataset.dropdownToggle = dropdownMenu.id;
+
+                // Creating and adding dropdown items
                 const dropdownList = document.createElement('ul');
                 dropdownList.classList.add('py-2', 'text-sm', 'text-gray-700', 'dark:text-gray-200');
-                dropdownList.setAttribute('aria-labelledby', 'dropdownMenuIconButton');
+                dropdownList.setAttribute('aria-labelledby', dropdownButton.id);
 
                 const dropdownItems = [
                     { label: 'Reply', href: '#' },
@@ -280,20 +292,23 @@
 
                 dropdownItems.forEach(item => {
                     const listItem = document.createElement('li');
-                    const anchor = document.createElement('a');
-                    anchor.classList.add('block', 'px-4', 'py-2', 'hover:bg-gray-100', 'dark:hover:bg-gray-600', 'dark:hover:text-white');
-                    anchor.textContent = item.label;
-                    anchor.href = item.href;
-                    if (item['data-message-id']) {
-                        anchor.dataset.messageId = item['data-message-id'];
-                    }
-                    listItem.appendChild(anchor);
+                    const anchorLink = document.createElement('a');
+
+                    anchorLink.classList.add('block', 'px-4', 'py-2', 'hover:bg-gray-100', 'dark:hover:bg-gray-600', 'dark:hover:text-white');
+                    anchorLink.textContent = item.label;
+                    anchorLink.href = item.href;
+
+                    listItem.appendChild(anchorLink);
                     dropdownList.appendChild(listItem);
                 });
 
-                dropdownButton.appendChild(dropdownIcon);
+                dropdownMenu.appendChild(dropdownList);
+
+                // Adding dropdown button and dropdown menu to the flex container
                 flexContainer.appendChild(dropdownButton);
                 flexContainer.appendChild(dropdownMenu);
+
+                // Adding flex container to the main message item
                 messageItem.appendChild(flexContainer);
 
                 return messageItem;
@@ -314,8 +329,10 @@
                 if ('edit' in data) {
                     const messageToEdit = document.querySelector(`[data-message-id="${data.edit}"]`);
                     if (messageToEdit) {
-                        const contentElement = messageToEdit.querySelector('p.text-sm');
-                        contentElement.textContent = data.editContent;
+                        const messageContentElement = messageToEdit.querySelector('p.text-sm');
+                        messageContentElement.textContent = data.editContent;
+                        const messageUpdatedAtElement = messageToEdit.querySelector('span.message-timestamp');
+                        messageUpdatedAtElement.textContent = "Edited at " + data.editTimestamp;
                     }
                     return;
                 }
@@ -388,10 +405,13 @@
                                 messageContent.textContent = editedContent;
                                 messageContent.classList.remove('hidden');
                                 editForm.classList.add('hidden');
+
+                                const messageUpdatedAtElement = messageItem.querySelector('.message-timestamp');
                             })
                             .catch(error => {
                                 console.error('Error updating message:', error);
                             });
+
                     });
 
                     // Event listener for the 'Cancel' button
