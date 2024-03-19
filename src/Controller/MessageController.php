@@ -135,17 +135,24 @@ class MessageController extends AbstractController
 
         $this->messageService->updateMessage($message);
 
-        $update = new Update(
-            '/dialog/user/'.$message->getRecipient()->getId(),
-            json_encode(['edit' => $message->getId(), 'editContent' => $message->getContent()])
+        $senderUpdate = new Update(
+            '/dialog/user/'.$message->getSender()->getId(),
+            json_encode(['edit' => $message->getId(), 'editContent' => $message->getContent(), 'editTimestamp' => $message->getUpdatedAt()->format('H:i')])
         );
-        $publisher($update);
+
+        $recipientUpdate = new Update(
+            '/dialog/user/'.$message->getRecipient()->getId(),
+            json_encode(['edit' => $message->getId(), 'editContent' => $message->getContent(), 'editTimestamp' => $message->getUpdatedAt()->format('H:i')])
+        );
+        $publisher($senderUpdate);
+        $publisher($recipientUpdate);
 
         return new JsonResponse([
             'success' => true,
             'message' => [
                 'content' => $message->getContent(),
                 'sender' => $message->getSender()->getUsername(),
+                'updatedTimestamp' => $message->getUpdatedAt()->format('H:i')
             ]
         ], Response::HTTP_OK);
     }
