@@ -114,7 +114,7 @@
                 image.setAttribute('alt', 'User image');
 
                 const messageContentContainer = document.createElement('div');
-                messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[320px]', 'leading-1.5', 'p-4', 'border-gray-200', 'bg-gray-100', 'rounded-e-xl', 'rounded-es-xl', 'dark:bg-gray-700');
+                messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'bg-gray-100', 'rounded-e-xl', 'rounded-es-xl', 'dark:bg-gray-700');
 
                 const senderInfo = document.createElement('div');
                 senderInfo.classList.add('flex', 'items-center', 'space-x-2', 'rtl:space-x-reverse');
@@ -128,7 +128,7 @@
                 createdAt.textContent = message.createdAt;
 
                 const messageContent = document.createElement('p');
-                messageContent.classList.add('message-content', 'text-sm', 'font-normal', 'py-2.5', 'text-gray-900', 'dark:text-white');
+                messageContent.classList.add('message-content', 'text-sm', 'max-w-[420px]', 'font-normal', 'py-2.5', 'text-gray-900', 'dark:text-white');
                 messageContent.textContent = message.content;
 
                 const editForm = document.createElement('div');
@@ -218,7 +218,7 @@
                 image.setAttribute('alt', 'User image');
 
                 const messageContentContainer = document.createElement('div');
-                messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[320px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-blue-300');
+                messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-blue-300');
 
                 const senderInfo = document.createElement('div');
                 senderInfo.classList.add('flex', 'items-center', 'space-x-2', 'rtl:space-x-reverse');
@@ -232,7 +232,7 @@
                 createdAt.textContent = message.createdAt;
 
                 const messageContent = document.createElement('p');
-                messageContent.classList.add('text-sm', 'font-normal', 'py-2.5', 'text-gray-900', 'dark:text-white');
+                messageContent.classList.add('text-sm', 'font-normal', 'py-2.5', 'max-w-[420px]', 'text-gray-900', 'dark:text-white');
                 messageContent.textContent = message.content;
 
                 const editedAt = document.createElement('span');
