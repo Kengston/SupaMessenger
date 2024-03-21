@@ -3,12 +3,12 @@
     ml-auto  bg-gray-200 text-gray-800 animate__animated animate__fadeInLeft" data-message-id="{{ message.id }}">
     <div class="flex items-start gap-2.5">
         <img class="w-8 h-8 rounded-full" src="https://i.pinimg.com/736x/45/6a/e4/456ae4e5ae1e340ee824209fd8874c8b.jpg" alt="Jese image">
-        <div class="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl bg-blue-300">
+        <div class="flex flex-col w-full max-w-[420px] leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl bg-blue-300">
             <div class="flex items-center space-x-2 rtl:space-x-reverse">
                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ message.sender }}</span>
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
             </div>
-            <p class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+            <p class="text-sm font-normal max-w-[420px] py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
 
                 <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
                     {% if message.updatedAt is not null %}
