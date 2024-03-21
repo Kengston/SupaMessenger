@@ -68,9 +68,9 @@
                             <i class="far fa-smile text-gray-600"></i>
                         </button>
                         <!-- Image button -->
-                        <button type="button" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none">
+                        <label class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" >
                             <i class="far fa-image text-gray-600"></i>
-                        </button>
+                        </label>
                         <!-- Input field (input) -->
                         {{ form_widget(messageForm.content, {'attr': {'class': 'form-textarea flex-grow rounded-lg py-2 px-12 mx-2 resize-vertical'}}) }}
                         <!-- Submit button -->
@@ -89,11 +89,11 @@
 
     {% if selectedUser %}
         <script type="text/template" id="user-message-template">
-            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder'}} %}
+            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder', 'photoFile': 'photoFile-placeholder'}} %}
         </script>
 
         <script type="text/template" id="other-message-template">
-            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder'}} %}
+            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder', 'photoFile': 'photoFile-placeholder'}} %}
         </script>
 
 

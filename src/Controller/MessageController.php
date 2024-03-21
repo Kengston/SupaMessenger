@@ -8,6 +8,7 @@ use App\Repository\MessageRepository;
 use App\Service\MessageService;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,6 @@ class MessageController extends AbstractController
 {
     private $userRepository;
     private $messageService;
-
     private $messageRepository;
 
     public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository)
@@ -41,37 +41,57 @@ class MessageController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent());
 
-            if ($newMessage) {
-                $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
-                $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+            $photoFile = $form->get('photoData')->getData();
 
-                $senderUpdate = new Update(
-                    '/dialog/user/'.$currentUser->getId(),
-                    json_encode([
-                        'sender' => $currentUser->getUsername(),
-                        'id' => $newMessage->getId(),
-                        'content' => $newMessage->getContent(),
-                        'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt
-                    ])
-                );
-                $recipientUpdate = new Update(
-                    '/dialog/user/'.$selectedUser->getId(),
-                    json_encode([
-                        'sender' => $currentUser->getUsername(),
-                        'id' => $newMessage->getId(),
-                        'content' => $newMessage->getContent(),
-                        'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt
-                    ])
-                );
-                $publisher($senderUpdate);
-                $publisher($recipientUpdate);
+            try {
+                if ($photoFile) {
+                    $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+                    $photoFile->move(
+                        $this->getParameter('kernel.project_dit') . '/public/uploads',
+                        $newFilename
+                    );
+
+                    $form->getData()->setPhoto($newFilename);
+                }
+
+                $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent(), $form->getData()->getPhoto());
+
+                if ($newMessage) {
+                    $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
+                    $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+
+                    $senderUpdate = new Update(
+                        '/dialog/user/'.$currentUser->getId(),
+                        json_encode([
+                            'sender' => $currentUser->getUsername(),
+                            'id' => $newMessage->getId(),
+                            'content' => $newMessage->getContent(),
+                            'updatedAt' => $updatedAt,
+                            'createdAt' => $createdAt,
+                            'photoFile' => $photoFile
+                        ])
+                    );
+                    $recipientUpdate = new Update(
+                        '/dialog/user/'.$selectedUser->getId(),
+                        json_encode([
+                            'sender' => $currentUser->getUsername(),
+                            'id' => $newMessage->getId(),
+                            'content' => $newMessage->getContent(),
+                            'updatedAt' => $updatedAt,
+                            'createdAt' => $createdAt,
+                            'photoFile' => $photoFile
+                        ])
+                    );
+                    $publisher($senderUpdate);
+                    $publisher($recipientUpdate);
+                }
+
+                return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
+            } catch (FileException $e) {
+                return new Response($e->getMessage());
             }
-
-            return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
 
 

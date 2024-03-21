@@ -18,20 +18,21 @@ class MessageService
         $this->messageRepository = $messageRepository;
     }
 
-    public function createMessage(User $sender, User $recipient, string $content): Message
+    public function createMessage(User $sender, User $recipient, string $content, ?string $photoFilename): Message
     {
         $message = new Message();
         $message->setSender($sender);
         $message->setRecipient($recipient);
         $message->setContent($content);
         $message->setCreatedAt(new \DateTimeImmutable());
+        $message->setPhotoData($photoFilename);
 
         return $message;
     }
 
-    public function createAndPersist(User $sender, User $recipient, string $content): Message
+    public function createAndPersist(User $sender, User $recipient, string $content, ?string $photoFilename): Message
     {
-        $newMessage = $this->createMessage($sender, $recipient, $content);
+        $newMessage = $this->createMessage($sender, $recipient, $content, $photoFilename);
         $this->entityManager->persist($newMessage);
         $this->entityManager->flush();
 
@@ -40,7 +41,6 @@ class MessageService
 
     public function updateMessage($message) : void
     {
-
         $message->setUpdatedAt(new \DateTime());
         $this->entityManager->persist($message);
         $this->entityManager->flush();
