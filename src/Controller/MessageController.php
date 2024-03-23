@@ -8,6 +8,7 @@ use App\Repository\MessageRepository;
 use App\Service\MessageService;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +21,6 @@ class MessageController extends AbstractController
 {
     private $userRepository;
     private $messageService;
-
     private $messageRepository;
 
     public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository)
@@ -40,12 +40,26 @@ class MessageController extends AbstractController
         $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent());
+
+            $uploadedFile = $form->get('photoData')->getData();
+            $photoFilename = null;
+
+            if ($uploadedFile) {
+                try {
+                    $photoFilename = $this->messageService->uploadPhoto($uploadedFile);
+                } catch (\Throwable $e) {
+                    throw $this->createNotFoundException('Unable to upload the photo');
+                }
+            }
+
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent(), $photoFilename);
 
             if ($newMessage) {
                 $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
                 $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+
 
                 $senderUpdate = new Update(
                     '/dialog/user/'.$currentUser->getId(),
@@ -54,7 +68,8 @@ class MessageController extends AbstractController
                         'id' => $newMessage->getId(),
                         'content' => $newMessage->getContent(),
                         'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt
+                        'createdAt' => $createdAt,
+                        'photoData' => $photoFilename
                     ])
                 );
                 $recipientUpdate = new Update(
@@ -64,7 +79,8 @@ class MessageController extends AbstractController
                         'id' => $newMessage->getId(),
                         'content' => $newMessage->getContent(),
                         'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt
+                        'createdAt' => $createdAt,
+                        'photoData' => $photoFilename
                     ])
                 );
                 $publisher($senderUpdate);
@@ -76,6 +92,7 @@ class MessageController extends AbstractController
 
 
         $users = $this->userRepository->findAll();
+
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
@@ -144,6 +161,7 @@ class MessageController extends AbstractController
             '/dialog/user/'.$message->getRecipient()->getId(),
             json_encode(['edit' => $message->getId(), 'editContent' => $message->getContent(), 'editTimestamp' => $message->getUpdatedAt()->format('H:i')])
         );
+
         $publisher($senderUpdate);
         $publisher($recipientUpdate);
 

@@ -25,6 +25,9 @@ class Message
     #[ORM\Column(type: "boolean")]
     private ?bool $deleted = false;
 
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $photoData = null;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
@@ -79,10 +82,21 @@ class Message
         return $this->deleted;
     }
 
-    public function setDeleted(bool $delete):
-    self
+    public function setDeleted(bool $delete): self
     {
         $this->deleted = $delete;
+        return $this;
+    }
+
+    public function getPhotoData(): ?string
+    {
+        return $this->photoData;
+    }
+
+    public function setPhotoData(?string $photoData): self
+    {
+        $this->photoData = $photoData;
+
         return $this;
     }
 

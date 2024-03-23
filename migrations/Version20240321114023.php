@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240312111059 extends AbstractMigration
+final class Version20240321114023 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -19,18 +19,25 @@ final class Version20240312111059 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
+        // Add the 'deleted' column as nullable
+        $this->addSql('ALTER TABLE message ADD deleted BOOLEAN');
+
+        // Set a default value for the 'deleted' column
+        $this->addSql('UPDATE message SET deleted = false');
+
+        // Alter the 'deleted' column to be NOT NULL
+        $this->addSql('ALTER TABLE message ALTER COLUMN deleted SET NOT NULL');
+
         $this->addSql('ALTER TABLE message ALTER created_at SET DEFAULT CURRENT_TIMESTAMP');
-        $this->addSql('ALTER TABLE message ALTER deleted SET NOT NULL');
         $this->addSql('ALTER TABLE message ALTER updated_at SET DEFAULT CURRENT_TIMESTAMP');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
+        // This down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
+        $this->addSql('ALTER TABLE message DROP deleted');
         $this->addSql('ALTER TABLE message ALTER created_at DROP DEFAULT');
         $this->addSql('ALTER TABLE message ALTER updated_at DROP DEFAULT');
-        $this->addSql('ALTER TABLE message ALTER deleted DROP NOT NULL');
     }
 }
