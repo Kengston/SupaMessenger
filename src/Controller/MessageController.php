@@ -40,62 +40,59 @@ class MessageController extends AbstractController
         $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $photoFile = $form->get('photoData')->getData();
+            $uploadedFile = $form->get('photoData')->getData();
+            $photoFilename = null;
 
-            try {
-                if ($photoFile) {
-                    $newFilename = uniqid() . '.' . $photoFile->guessExtension();
-
-                    $photoFile->move(
-                        $this->getParameter('kernel.project_dit') . '/public/uploads',
-                        $newFilename
-                    );
-
-                    $form->getData()->setPhoto($newFilename);
+            if ($uploadedFile) {
+                try {
+                    $photoFilename = $this->messageService->uploadPhoto($uploadedFile);
+                } catch (\Throwable $e) {
+                    throw $this->createNotFoundException('Unable to upload the photo');
                 }
-
-                $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent(), $form->getData()->getPhoto());
-
-                if ($newMessage) {
-                    $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
-                    $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
-
-                    $senderUpdate = new Update(
-                        '/dialog/user/'.$currentUser->getId(),
-                        json_encode([
-                            'sender' => $currentUser->getUsername(),
-                            'id' => $newMessage->getId(),
-                            'content' => $newMessage->getContent(),
-                            'updatedAt' => $updatedAt,
-                            'createdAt' => $createdAt,
-                            'photoFile' => $photoFile
-                        ])
-                    );
-                    $recipientUpdate = new Update(
-                        '/dialog/user/'.$selectedUser->getId(),
-                        json_encode([
-                            'sender' => $currentUser->getUsername(),
-                            'id' => $newMessage->getId(),
-                            'content' => $newMessage->getContent(),
-                            'updatedAt' => $updatedAt,
-                            'createdAt' => $createdAt,
-                            'photoFile' => $photoFile
-                        ])
-                    );
-                    $publisher($senderUpdate);
-                    $publisher($recipientUpdate);
-                }
-
-                return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
-            } catch (FileException $e) {
-                return new Response($e->getMessage());
             }
+
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent(), $photoFilename);
+
+            if ($newMessage) {
+                $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
+                $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+
+
+                $senderUpdate = new Update(
+                    '/dialog/user/'.$currentUser->getId(),
+                    json_encode([
+                        'sender' => $currentUser->getUsername(),
+                        'id' => $newMessage->getId(),
+                        'content' => $newMessage->getContent(),
+                        'updatedAt' => $updatedAt,
+                        'createdAt' => $createdAt,
+                        'photoData' => $photoFilename
+                    ])
+                );
+                $recipientUpdate = new Update(
+                    '/dialog/user/'.$selectedUser->getId(),
+                    json_encode([
+                        'sender' => $currentUser->getUsername(),
+                        'id' => $newMessage->getId(),
+                        'content' => $newMessage->getContent(),
+                        'updatedAt' => $updatedAt,
+                        'createdAt' => $createdAt,
+                        'photoData' => $photoFilename
+                    ])
+                );
+                $publisher($senderUpdate);
+                $publisher($recipientUpdate);
+            }
+
+            return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
 
 
         $users = $this->userRepository->findAll();
+
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
@@ -164,6 +161,7 @@ class MessageController extends AbstractController
             '/dialog/user/'.$message->getRecipient()->getId(),
             json_encode(['edit' => $message->getId(), 'editContent' => $message->getContent(), 'editTimestamp' => $message->getUpdatedAt()->format('H:i')])
         );
+
         $publisher($senderUpdate);
         $publisher($recipientUpdate);
 

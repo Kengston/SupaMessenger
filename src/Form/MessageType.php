@@ -18,7 +18,14 @@ class MessageType extends AbstractType
             ])
             ->add('photoData', FileType::class, [
                 'label' => 'Upload Photo',
-                'required' => false
+                'required' => false,
+                'mapped' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\File([
+                        'maxSize' => '10M', // Increase limit to 10MB
+                        // You can also add other constraints like mimeTypes
+                    ])
+                ],
             ]);
     }
 
