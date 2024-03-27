@@ -70,7 +70,7 @@
                         <!-- Image button -->
                         <label for="message_photoData" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none">
                             {{ form_widget(messageForm.photoData, {'attr': {'style': 'display:none', 'id':'message_photoData'}}) }}
-                            <i class="far fa-image text-gray-600"></i>
+                            <i class="far fa-image text-gray-600 fa-dynamic-icon"></i>
                         </label>
                         <!-- Input field (input) -->
                         {{ form_widget(messageForm.content, {'attr': {'class': 'form-textarea flex-grow rounded-lg py-2 px-12 mx-2 resize-vertical'}}) }}
@@ -443,6 +443,36 @@
                         editForm.classList.add('hidden');
                     });
                 }
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const inputElement = document.querySelector('#message_photoData');
+                const iconElement = document.querySelector('.fa-dynamic-icon');
+
+                inputElement.addEventListener('change', function () {
+                    if (this.files && this.files.length > 0) {
+                        // A file has been selected
+                        iconElement.classList.remove('far', 'fa-image', 'text-gray-600');
+                        iconElement.classList.add('fa-solid', 'fa-xmark');
+                    } else {
+                        // No file selected
+                        iconElement.classList.add('far', 'fa-image', 'text-gray-600');
+                        iconElement.classList.remove('fa-solid', 'fa-xmark');
+                    }
+                });
+
+                iconElement.addEventListener('click', function () {
+                    // Check if the icon is in 'cancel' mode
+                    if (iconElement.classList.contains('fa-xmark')) {
+                        // Clear the file input
+                        inputElement.value = '';
+                        // Change the icon back to the image icon
+                        iconElement.classList.add('far', 'fa-image', 'text-gray-600');
+                        iconElement.classList.remove('fa-solid', 'fa-xmark');
+                    }
+                });
             });
         </script>
 
