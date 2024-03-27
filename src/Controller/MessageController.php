@@ -61,6 +61,8 @@ class MessageController extends AbstractController
                 $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
 
 
+                dd($newMessage);
+
                 $senderUpdate = new Update(
                     '/dialog/user/'.$currentUser->getId(),
                     json_encode([
