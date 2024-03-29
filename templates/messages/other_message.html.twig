@@ -11,7 +11,7 @@
             {% if message.photoData %}
                 <img src="{{ asset('uploads/' ~ message.photoData) }}" alt="Message Photo" class="max-w-xs mt-2">
             {% endif %}
-            <p class="text-sm font-normal max-w-[420px] py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+            <p class="text-lg font-light max-w-[420px] py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
             <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
                 {% if message.updatedAt is not null %}
                     Edited at {{ message.updatedAt }}

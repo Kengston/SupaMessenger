@@ -93,6 +93,7 @@ class MessageController extends AbstractController
         $users = $this->userRepository->findAll();
 
 
+
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
             'currentUser' => $currentUser,

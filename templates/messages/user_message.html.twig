@@ -11,7 +11,7 @@
             {% if message.photoData %}
                 <img src="{{ asset('uploads/' ~ message.photoData) }}" alt="Message Photo" class="max-w-xs mt-2">
             {% endif %}
-            <p class="message-content text-sm max-w-[420px] font-normal py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+            <p class="message-content text-lg max-w-[420px] font-light py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
             <div class="message-edit-form hidden">
                 <div class="flex items-center">
                     <input type="text" value="{{ message.content }}" id="small-input" class="flex-grow block p-2  text-gray-900
