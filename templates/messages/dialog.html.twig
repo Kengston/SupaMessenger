@@ -41,7 +41,35 @@
                     {% if selectedUser %}
                     <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
                     {% endif %}
-                    <a href="{{ path('app_logout') }}" class="text-black-500 hover:underline ml-auto"><i class="fa-solid fa-right-from-bracket"></i></a>
+
+
+                    <div id="dropdownUserIconButton" data-dropdown-toggle="dropdownUserIconMenu" data-dropdown-placement="bottom" class="group text-black-500 hover:underline ml-auto" type="button">
+                        <img class="fa-right-from-bracket w-12 h-12 rounded-full border-4 border-blue-500 transform transition-transform duration-200 ease-in-out group-hover:scale-110" src="https://static.vecteezy.com/system/resources/previews/002/592/204/original/little-student-afro-boy-avatar-character-free-vector.jpg" alt="Jese image">
+                    </div>
+
+                    <div id="dropdownUserIconMenu" class="z-10 hidden bg-white border border-gray-200 rounded-lg shadow w-40">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
+                            <li class="block">
+                                <a href="#" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <span>Settings</span>
+                                    <i class="fa-solid fa-gears"></i>
+                                </a>
+                            </li>
+                            <li class="block">
+                                <a href="#" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <span>Avatar</span>
+                                    <i class="fa-regular fa-images"></i>
+                                </a>
+                            </li>
+                            <li class="block mt-2 border-t border-gray-200 pt-2">
+                                <a href="{{ path('app_logout') }}" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    <span>Log Out</span>
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
 
                 {% if selectedUser %}
