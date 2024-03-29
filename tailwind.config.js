@@ -9,8 +9,14 @@ module.exports = {
     ],
     plugins: [
         require('flowbite/plugin')
-    ]
-
+    ],
+    variants: {
+        extend: {
+            // ..
+            scale: ['active'],
+            transform: ['active'],
+        }
+    }
 }
 
 

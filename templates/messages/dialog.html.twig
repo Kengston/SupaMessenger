@@ -56,7 +56,6 @@
                             {% include 'messages/user_message.html.twig' with {'message': message} %}
                         {% endif %}
                     {% endfor %}
-
                 </div>
 
                 <!-- Message Form -->
@@ -64,9 +63,26 @@
                     {{ form_start(messageForm) }}
                     <div class="flex items-center justify-center">
                         <!-- Emoji button -->
-                        <button type="button" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none">
+                        <button id="dropdownMenuEmojiButton" data-dropdown-toggle="dropdownMenuEmoji" data-dropdown-placement="top" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" type="button">
                             <i class="far fa-smile text-gray-600"></i>
                         </button>
+
+                        <div id="dropdownMenuEmoji" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-64 overflow-auto">
+                            <div class="py-2 text-2xl grid grid-cols-5 gap-2 p-2">
+                                <!-- Add Emoji icons -->
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😀</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😃</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😄</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😁</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😆</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😅</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😂</button>
+                                <!-- New Emoji icons -->
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😎</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😍</button>
+                                <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😒</button>
+                            </div>
+                        </div>
                         <!-- Image button -->
                         <label for="message_photoData" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none">
                             {{ form_widget(messageForm.photoData, {'attr': {'style': 'display:none', 'id':'message_photoData'}}) }}
@@ -369,6 +385,32 @@
                 const messageList = document.getElementById('message-list');
                 messageList.scrollTop = messageList.scrollHeight;
             };
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const emojiMenu = document.getElementById('dropdownMenuEmoji');
+                const messageContentInput = document.getElementById('message_content');
+
+                // Add event listener to each emoji button
+                const emojiButtons = document.querySelectorAll('.emoji-btn');
+                emojiButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Get the emoji from the clicked button
+                        const emoji = button.textContent;
+
+                        // Insert the emoji into the message form content input field
+                        if (messageContentInput) {
+                            messageContentInput.value += emoji;
+
+                            console.log('Message content:', messageContentInput.value); // Debugging
+                        } else {
+                            console.error('Message content input field not found.'); // Debugging
+                        }
+
+                    });
+                });
+            });
         </script>
 
         <script>
