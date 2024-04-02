@@ -47,24 +47,28 @@
 
                     <div class="flex items-end">
                         <div id="dropdownUserStatusIconButton" data-dropdown-toggle="dropdownUserStatusIconMenu" data-dropdown-placement="bottom" class="group cursor-pointer text-black hover:text-gray-800 mb-3 flex items-center space-x-2">
-                            <span class="dot bg-green-500 rounded-full h-2 w-2 inline-block mr-2"></span>Online
-                            <i id="iconNormal" class="fa-solid fa-chevron-down transition-transform duration-200 group-hover:rotate-180 "></i>
+                            <span id="statusDot" class="dot bg-green-500 rounded-full h-2 w-2 inline-block mr-2"></span> <!-- Status dot -->
+                            <span id="statusText">Online</span> <!-- Status text -->
+                            <i id="iconNormal" class="fa-solid fa-chevron-down transition-transform duration-200 group-hover:rotate-180"></i>
                             <i id="iconAnimated" class="hidden fa-solid fa-chevron-down animate-bounce"></i>
                         </div>
 
-                        <div id="dropdownUserStatusIconMenu" class="z-10 hidden bg-white border border-gray-200 rounded-lg shadow-md w-40 ">
+                        <div id="dropdownUserStatusIconMenu" class="z-10 hidden bg-white border border-gray-200 rounded-lg shadow-md w-40">
                             <ul>
-                                <li class="flex items-center py-2 px-4 hover:bg-gray-100">
-                                    <span class="h-3 w-3 mr-2 bg-orange-400 rounded-full"></span> <!-- Orange dot for Busy status -->
-                                    <span>Busy</span>
+                                <li class="flex items-center py-2 px-4 hover:bg-gray-100" data-status="Online">
+                                    <span class="h-3 w-3 mr-2 bg-green-500 rounded-full"></span> <!-- Status dot -->
+                                    <span>Online</span> <!-- Status text -->
                                 </li>
-                                <li class="flex items-center py-2 px-4 hover:bg-gray-100">
-                                    <span class="h-3 w-3 mr-2 bg-red-400 rounded-full"></span> <!-- Red dot for Offline status -->
-                                    <span>Offline</span>
+                                <li class="flex items-center py-2 px-4 hover:bg-gray-100" data-status="Busy">
+                                    <span class="h-3 w-3 mr-2 bg-orange-400 rounded-full"></span> <!-- Status dot -->
+                                    <span>Busy</span> <!-- Status text -->
+                                </li>
+                                <li class="flex items-center py-2 px-4 hover:bg-gray-100" data-status="Offline">
+                                    <span class="h-3 w-3 mr-2 bg-red-400 rounded-full"></span> <!-- Status dot -->
+                                    <span>Offline</span> <!-- Status text -->
                                 </li>
                             </ul>
                         </div>
-
 
                         <div id="dropdownUserIconButton" data-dropdown-toggle="dropdownUserIconMenu" data-dropdown-placement="bottom" class="group text-black-500 hover:underline pl-4" type="button">
                             <img class="fa-right-from-bracket w-12 h-12 rounded-full border-4 border-blue-500 transform transition-transform duration-200 ease-in-out group-hover:scale-110" src="https://static.vecteezy.com/system/resources/previews/002/592/204/original/little-student-afro-boy-avatar-character-free-vector.jpg" alt="Jese image">
@@ -577,6 +581,42 @@
                     let iconElementAnimated = document.getElementById('iconAnimated');
                     iconElementNormal.classList.toggle('hidden');
                     iconElementAnimated.classList.toggle('hidden');
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('dropdownUserStatusIconMenu').addEventListener('click', function(event) {
+                    let target = event.target;
+                    if (target.tagName === 'LI') {
+                        let status = target.getAttribute('data-status');
+                        let statusDot = document.getElementById('statusDot');
+                        let statusText = document.getElementById('statusText');
+                        let dropdownMenu = document.getElementById('dropdownUserStatusIconMenu');
+                        let iconElementNormal = document.getElementById('iconNormal');
+                        let iconElementAnimated = document.getElementById('iconAnimated');
+
+                        // Update status dot color
+                        if (status === 'Online') {
+                            statusDot.classList.remove('bg-orange-400', 'bg-red-400');
+                            statusDot.classList.add('bg-green-500');
+                        } else if (status === 'Busy') {
+                            statusDot.classList.remove('bg-green-500', 'bg-red-400');
+                            statusDot.classList.add('bg-orange-400');
+                        } else if (status === 'Offline') {
+                            statusDot.classList.remove('bg-green-500', 'bg-orange-400');
+                            statusDot.classList.add('bg-red-400');
+                        }
+
+                        // Update status text
+                        statusText.textContent = status;
+
+                        // Close the dropdown menu
+                        dropdownMenu.classList.add('hidden');
+
+                        // Show iconElementNormal and hide iconElementAnimated
+                        iconElementNormal.classList.remove('hidden');
+                        iconElementAnimated.classList.add('hidden');
+                    }
                 });
             });
         </script>
