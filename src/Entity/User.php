@@ -26,6 +26,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", length: 50)]
     private ?string $email = null;
 
+    #[ORM\Column(type: "string", length: 50, nullable: true)]
+    private ?string $status = "offline";
+
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -65,6 +68,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getStatus(string $status): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

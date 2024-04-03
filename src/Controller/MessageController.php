@@ -89,10 +89,7 @@ class MessageController extends AbstractController
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
 
-
         $users = $this->userRepository->findAll();
-
-
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
