@@ -72,7 +72,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getStatus(string $status): ?string
+    public function getStatus(): ?string
     {
         return $this->status;
     }

@@ -40,7 +40,17 @@
 
                 {% if selectedUser %}
 
-                    <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 relative">
+                            <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="https://i.pinimg.com/736x/45/6a/e4/456ae4e5ae1e340ee824209fd8874c8b.jpg" alt="{{ selectedUser.username }}">
+                        </div>
+                        <div class="ml-4">
+                            <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
+                            <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400 pl-1">
+                                {{ selectedUser.status }}
+                            </span>
+                        </div>
+                    </div>
 
                 {% endif %}
 
@@ -63,10 +73,6 @@
                             <li class="flex items-center py-2 px-4 hover:bg-gray-100" data-status="Busy">
                                 <span class="h-3 w-3 mr-2 bg-orange-400 rounded-full"></span> <!-- Status dot -->
                                 <span>Busy</span> <!-- Status text -->
-                            </li>
-                            <li class="flex items-center py-2 px-4 hover:bg-gray-100" data-status="Offline">
-                                <span class="h-3 w-3 mr-2 bg-red-400 rounded-full"></span> <!-- Status dot -->
-                                <span>Offline</span> <!-- Status text -->
                             </li>
                         </ul>
                     </div>
