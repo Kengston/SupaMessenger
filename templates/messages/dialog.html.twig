@@ -18,18 +18,37 @@
 
     <div class="flex h-screen bg-gray-200 text-black-600 relative">
         <!-- Sidebar -->
-        <div class="overflow-auto w-1/4 bg-white border-r">
+        <div class="overflow-auto w-1/4 bg-white border-r border-gray-200">
             <div class="p-5">
-                <h1 class="text-lg font-bold mb-5 text-center">Select a User to start a dialog</h1>
-                <ul id="user-list" class="space-y-5">
+                <!-- Search Form Starts Here -->
+                <form class="max-w-md mx-auto">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <label for="default-search" class="sr-only">Search</label>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-500" aria-hidden="true" fill="none" viewBox="0 0 20 20">
+                                <!-- Search Icon -->
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                            </svg>
+                        </div>
+                        <!-- Search Input Field -->
+                        <input type="search" id="default-search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search Users" required />
+                        <!-- Search Button -->
+                    </div>
+                </form>
+                <!-- User List Starts Here -->
+                <ul id="user-list" class="mt-5 space-y-5">
+                    <!-- Iterate through users -->
                     {% for user in users %}
                         <li class="animate__animated animate__fadeIn">
+                            <!-- User List Item -->
                             <a class="block py-2 px-6 hover:bg-gray-200 rounded-lg" href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a>
                         </li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
+
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
@@ -50,7 +69,7 @@
                                 {% if selectedUser.status == 'online' %}
                                     {{ selectedUser.status }}
                                 {% else %}
-                                    User was here at: {{ selectedUserLogoutAt }}
+                                    User was here at: {{ selectedUserChangeStatusAt }}
                                 {% endif %}
                             </span>
                         </div>
