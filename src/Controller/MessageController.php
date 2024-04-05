@@ -36,7 +36,7 @@ class MessageController extends AbstractController
 
         $form = $this->createForm(MessageType::class, new Message());
         $selectedUser = $id ? $this->userRepository->find($id) : null;
-        $selectedUserLogoutAt = $selectedUser?->getLogoutAt();
+        $selectedUserChangeStatusAt = $selectedUser?->getChangeStatusAt();
 
         $currentUser = $this->getUser();
         $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
@@ -95,7 +95,7 @@ class MessageController extends AbstractController
 
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
-            'selectedUserLogoutAt' => $selectedUserLogoutAt,
+            'selectedUserChangeStatusAt' => $selectedUserChangeStatusAt,
             'currentUser' => $currentUser,
             'messages' => $messages,
             'users' => $users,

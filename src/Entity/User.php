@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $status = "offline";
 
     #[ORM\Column(type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?\DateTime $logoutAt = null;
+    private ?\DateTime $changeStatusAt = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
@@ -87,14 +87,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLogoutAt(): ?string
+    public function getChangeStatusAt(): ?string
     {
-        return $this->logoutAt?->format('H:i');
+        return $this->changeStatusAt?->format('H:i');
     }
 
-    public function setLogoutAt(?\DateTime $logoutAt): self
+    public function setChangeStatusAt(?\DateTime $changeStatusAt): self
     {
-        $this->logoutAt = $logoutAt;
+        $this->changeStatusAt = $changeStatusAt;
 
         return $this;
     }
