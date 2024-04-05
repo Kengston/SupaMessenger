@@ -28,6 +28,9 @@ class LogoutSubscriber implements EventSubscriberInterface
 
         if ($user instanceof User) {
             $user->setStatus('offline');
+
+            $user->setLogoutAt(new \DateTime);
+
             $this->entityManager->persist($user);
             $this->entityManager->flush();
         }
