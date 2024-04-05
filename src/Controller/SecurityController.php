@@ -33,8 +33,6 @@ class SecurityController extends AbstractController
     {
         $user = $security->getUser();
 
-        dd($user);
-
         if ($user instanceof User) {
             // Update user status to "offline"
             $user->setStatus('offline');
