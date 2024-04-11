@@ -96,8 +96,4 @@ class MessageService
 
         return $formattedMessages;
     }
-
-
-
-
 }

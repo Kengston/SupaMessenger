@@ -32,6 +32,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "datetime", nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?\DateTime $changeStatusAt = null;
 
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $avatarFileName = null;
+
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -95,6 +98,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setChangeStatusAt(?\DateTime $changeStatusAt): self
     {
         $this->changeStatusAt = $changeStatusAt;
+
+        return $this;
+    }
+
+    public function getAvatarFileName(): ?string
+    {
+        return $this->avatarFileName;
+    }
+
+    public function setAvatarFileName(string $avatarFileName): self
+    {
+        $this->avatarFileName = $avatarFileName;
 
         return $this;
     }

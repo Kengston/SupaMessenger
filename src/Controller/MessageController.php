@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Message;
+use App\Entity\User;
 use App\Form\MessageType;
+use App\Form\UserType;
 use App\Repository\MessageRepository;
 use App\Service\MessageService;
 use App\Repository\UserRepository;
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,29 +26,45 @@ class MessageController extends AbstractController
     private $messageService;
     private $messageRepository;
 
-    public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository)
+    public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository, UserService $userService)
     {
         $this->userRepository = $userRepository;
         $this->messageService = $messageService;
         $this->messageRepository = $messageRepository;
+        $this->userService = $userService;
     }
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
     public function dialog(int $id = null, Request $request, PublisherInterface $publisher): Response
     {
+        $currentUser = $this->getUser();
 
-        $form = $this->createForm(MessageType::class, new Message());
+        $avatarForm = $this->createForm(UserType::class, $currentUser);
+        $messageForm = $this->createForm(MessageType::class, new Message());
+
         $selectedUser = $id ? $this->userRepository->find($id) : null;
         $selectedUserChangeStatusAt = $selectedUser?->getChangeStatusAt();
 
-        $currentUser = $this->getUser();
         $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
-        $form->handleRequest($request);
+        $avatarForm->handleRequest($request);
+        $messageForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
+            $avatarFile = $avatarForm->get('avatarFileName')->getData();
 
-            $uploadedFile = $form->get('photoData')->getData();
+            if ($avatarFile) {
+                try {
+                    $this->userService->uploadAvatar($currentUser, $avatarFile);
+                } catch (\Throwable $e) {
+                    throw $this->createNotFoundException('Unable to upload the avatar');
+                }
+            }
+        }
+
+        if ($messageForm->isSubmitted() && $messageForm->isValid()) {
+
+            $uploadedFile = $messageForm->get('photoData')->getData();
             $photoFilename = null;
 
             if ($uploadedFile) {
@@ -56,7 +75,7 @@ class MessageController extends AbstractController
                 }
             }
 
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $form->getData()->getContent(), $photoFilename);
+            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $messageForm->getData()->getContent(), $photoFilename);
 
             if ($newMessage) {
                 $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
@@ -99,7 +118,8 @@ class MessageController extends AbstractController
             'currentUser' => $currentUser,
             'messages' => $messages,
             'users' => $users,
-            'messageForm' => $form->createView(),
+            'avatarForm' => $avatarForm->createView(),
+            'messageForm' => $messageForm->createView(),
             'id' => $id
         ]);
     }
