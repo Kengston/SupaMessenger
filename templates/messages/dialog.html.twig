@@ -61,7 +61,8 @@
 
                     <div class="flex items-center">
                         <div class="w-12 h-12 relative">
-                            <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="https://i.pinimg.com/736x/45/6a/e4/456ae4e5ae1e340ee824209fd8874c8b.jpg" alt="{{ selectedUser.username }}">
+                            <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="{{ asset('avatars/' ~ selectedUser.avatarFileName) }}"
+                                 alt="{{ selectedUser.username }}">
                         </div>
                         <div class="ml-4">
                             <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
@@ -101,7 +102,9 @@
                     </div>
 
                     <div id="dropdownUserIconButton" data-dropdown-toggle="dropdownUserIconMenu" data-dropdown-placement="bottom" class="group text-black-500 hover:underline pl-4" type="button">
-                        <img class="fa-right-from-bracket w-12 h-12 rounded-full border-4 border-blue-500 transform transition-transform duration-200 ease-in-out group-hover:scale-110" src="https://static.vecteezy.com/system/resources/previews/002/592/204/original/little-student-afro-boy-avatar-character-free-vector.jpg" alt="Jese image">
+                        <img class="fa-right-from-bracket w-12 h-12 rounded-full border-4 border-blue-500 transform transition-transform duration-200 ease-in-out group-hover:scale-110"
+                             src="{{ asset('avatars/' ~ currentUser.avatarFileName) }}"
+                             alt="{{ currentUser.username }}" />
                     </div>
 
                     <div id="dropdownUserIconMenu" class="z-10 hidden bg-white border border-gray-200 rounded-lg shadow w-40">
@@ -113,10 +116,14 @@
                                 </a>
                             </li>
                             <li class="block">
-                                <a href="#" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                    <span>Avatar</span>
+                                {{ form_start(avatarForm) }}
+                                <label class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    Avatar
                                     <i class="fa-regular fa-images"></i>
-                                </a>
+                                    {{ form_errors(avatarForm.avatarFileName) }}
+                                    {{ form_widget(avatarForm.avatarFileName, {'attr': {'style': 'display: none', 'onchange': 'this.form.submit()'}}) }}
+                                </label>
+                                {{ form_end(avatarForm) }}
                             </li>
                             <li class="block mt-2 border-t border-gray-200 pt-2">
                                 <a href="{{ path('app_logout') }}" class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
