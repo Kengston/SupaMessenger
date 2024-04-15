@@ -61,7 +61,7 @@
 
                     <div class="flex items-center">
                         <div class="w-12 h-12 relative">
-                            <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="{{ asset('avatars/' ~ selectedUser.avatarFileName) }}"
+                            <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="{{ asset('avatars/' ~ (selectedUser.avatarFileName ?? 'user-tie-solid.svg')) }}"
                                  alt="{{ selectedUser.username }}">
                         </div>
                         <div class="ml-4">
@@ -103,7 +103,7 @@
 
                     <div id="dropdownUserIconButton" data-dropdown-toggle="dropdownUserIconMenu" data-dropdown-placement="bottom" class="group text-black-500 hover:underline pl-4" type="button">
                         <img class="fa-right-from-bracket w-12 h-12 rounded-full border-4 border-blue-500 transform transition-transform duration-200 ease-in-out group-hover:scale-110"
-                             src="{{ asset('avatars/' ~ currentUser.avatarFileName) }}"
+                             src="{{ asset('avatars/' ~ (currentUser.avatarFileName ?? 'user-tie-solid.svg')) }}"
                              alt="{{ currentUser.username }}" />
                     </div>
 

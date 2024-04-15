@@ -1,7 +1,7 @@
 <div class="message-item py-2 px-6 rounded-lg max-w-lg flex flex-col space-y-3
     mr-auto bg-gray-200 text-white animate__animated animate__fadeInRight" data-message-id="{{ message.id }}">
     <div class="flex items-start gap-2.5">
-        <img class="w-8 h-8 rounded-full" src="{{ currentUser.avatarFileName ? asset('avatars/' ~ currentUser.avatarFileName) : asset('avatars/2024-04-11-18-55-26-6617cfd071363.jpg') }}"
+        <img class="w-8 h-8 rounded-full" src="{{ asset('avatars/' ~ (currentUser.avatarFileName ?? 'user-tie-solid.svg')) }}"
              alt="{{ currentUser.username }}'s avatar" />
         <div class="flex flex-col w-full max-w-[420px] leading-1.5 p-4 border-gray-200 bg-gray-100
                     rounded-e-xl rounded-es-xl dark:bg-gray-700">
