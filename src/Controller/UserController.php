@@ -12,14 +12,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends AbstractController
 {
+    public function __construct(
+        private UserRepository $userRepository,
+        private EntityManagerInterface $em
+    ) {}
 
-    private $userRepository;
-    private $em;
-
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $em) {
-        $this->userRepository = $userRepository;
-        $this->em = $em;
-    }
     #[Route('/user', name: 'app_user')]
     public function index(): Response
     {

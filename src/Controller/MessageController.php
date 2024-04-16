@@ -22,19 +22,12 @@ use function PHPUnit\Framework\throwException;
 
 class MessageController extends AbstractController
 {
-    private $userRepository;
-    private $messageService;
-    private $messageRepository;
-
-    private $userService;
-
-    public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository, UserService $userService)
-    {
-        $this->userRepository = $userRepository;
-        $this->messageService = $messageService;
-        $this->messageRepository = $messageRepository;
-        $this->userService = $userService;
-    }
+    public function __construct(
+        private UserRepository $userRepository,
+        private MessageService $messageService,
+        private UserService $userService,
+        private MessageRepository $messageRepository
+    ) {}
 
     #[Route('user/dialog/message/delete/{messageId}', name: 'app_delete_message')]
     public function delete($messageId, PublisherInterface $publisher)

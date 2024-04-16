@@ -1,6 +1,5 @@
 <?php
 
-// src/Service/FileUploader.php
 namespace App\Service;
 
 use App\Entity\User;
@@ -28,11 +27,8 @@ class UserService
         try {
             $avatarFileName->move($this->getTargetDirectory(), $avatarPath);
         } catch (FileException $e) {
-            // You might want to re-throw the exception here or return false
             throw new \Exception('Unable to upload the avatar: '.$e->getMessage());
         }
-
-        // Persist the avatar path to user entity
 
         $user->setAvatarFileName($avatarPath);
         $this->entityManager->persist($user);
