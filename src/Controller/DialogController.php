@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Message;
 use App\Form\MessageType;
 use App\Form\UserType;
-use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\MessageService;
 use App\Service\UserService;
@@ -19,17 +18,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DialogController extends AbstractController
 {
-    private $userRepository;
-    private $messageService;
-    private $messageRepository;
-
-    public function __construct(UserRepository $userRepository, MessageService $messageService, MessageRepository $messageRepository, UserService $userService)
-    {
-        $this->userRepository = $userRepository;
-        $this->messageService = $messageService;
-        $this->messageRepository = $messageRepository;
-        $this->userService = $userService;
-    }
+    public function __construct(
+        private UserRepository $userRepository,
+        private MessageService $messageService,
+        private UserService $userService
+    ) {}
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
     public function dialog(int $id = null, Request $request, PublisherInterface $publisher): Response

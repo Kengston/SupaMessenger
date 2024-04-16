@@ -11,14 +11,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MessageService
 {
-    private $messageRepository;
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager, MessageRepository $messageRepository, ParameterBagInterface $params)
-    {
-        $this->entityManager = $entityManager;
-        $this->messageRepository = $messageRepository;
-        $this->params = $params;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private MessageRepository $messageRepository,
+        private ParameterBagInterface $params
+    ) {
     }
 
     private function createMessage(User $sender, User $recipient, string $content, ?string $photoFilename): Message
