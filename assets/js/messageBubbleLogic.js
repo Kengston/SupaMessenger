@@ -12,7 +12,7 @@ const createUserMessageBubble = (message) => {
     image.setAttribute('alt', 'User image');
 
     const messageContentContainer = document.createElement('div');
-    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[320px]', 'leading-1.5', 'p-4', 'border-gray-200', 'bg-gray-100', 'rounded-e-xl', 'rounded-es-xl', 'dark:bg-gray-700');
+    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'bg-gray-100', 'rounded-e-xl', 'rounded-es-xl', 'dark:bg-gray-700');
 
     const senderInfo = document.createElement('div');
     senderInfo.classList.add('flex', 'items-center', 'space-x-2', 'rtl:space-x-reverse');
@@ -25,8 +25,15 @@ const createUserMessageBubble = (message) => {
     createdAt.classList.add('text-sm', 'font-normal', 'text-gray-500', 'dark:text-gray-400');
     createdAt.textContent = message.createdAt;
 
+    if (message.photoData) {
+        const messagePhoto = document.createElement('img');
+        messagePhoto.src = "/uploads/" + message.photoData;
+        messagePhoto.alt = "Message Photo";
+        messagePhoto.className = "max-w-xs mt-2";
+    }
+
     const messageContent = document.createElement('p');
-    messageContent.classList.add('message-content', 'text-sm', 'font-normal', 'py-2.5', 'text-gray-900', 'dark:text-white');
+    messageContent.classList.add('message-content', 'text-lg', 'max-w-[420px]', 'font-light', 'py-2.5', 'text-gray-900', 'dark:text-white');
     messageContent.textContent = message.content;
 
     const editForm = document.createElement('div');
@@ -116,7 +123,7 @@ const createOtherMessageBubble = (message) => {
     image.setAttribute('alt', 'User image');
 
     const messageContentContainer = document.createElement('div');
-    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[320px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-blue-300');
+    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-blue-300');
 
     const senderInfo = document.createElement('div');
     senderInfo.classList.add('flex', 'items-center', 'space-x-2', 'rtl:space-x-reverse');
@@ -129,8 +136,17 @@ const createOtherMessageBubble = (message) => {
     createdAt.classList.add('text-sm', 'font-normal', 'text-gray-500', 'dark:text-gray-400');
     createdAt.textContent = message.createdAt;
 
+    const messagePhoto = document.createElement('img');
+    if (message.photoData) {
+        messagePhoto.src = "/uploads/" + message.photoData;
+        messagePhoto.alt = "Message Photo";
+        messagePhoto.className = "max-w-xs mt-2";
+    } else {
+        messagePhoto.src = "";
+    }
+
     const messageContent = document.createElement('p');
-    messageContent.classList.add('text-sm', 'font-normal', 'py-2.5', 'text-gray-900', 'dark:text-white');
+    messageContent.classList.add('text-lg', 'font-light', 'py-2.5', 'max-w-[420px]', 'text-gray-900', 'dark:text-white');
     messageContent.textContent = message.content;
 
     const editedAt = document.createElement('span');
@@ -144,6 +160,7 @@ const createOtherMessageBubble = (message) => {
     senderInfo.appendChild(senderName);
     senderInfo.appendChild(createdAt);
     messageContentContainer.appendChild(senderInfo);
+    messageContentContainer.appendChild(messagePhoto);
     messageContentContainer.appendChild(messageContent);
     messageContentContainer.appendChild(editedAt);
     flexContainer.appendChild(image);
@@ -210,4 +227,37 @@ const createOtherMessageBubble = (message) => {
     messageItem.appendChild(flexContainer);
 
     return messageItem;
+};
+
+eventSource.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    const messageList = document.getElementById('message-list');
+
+    if ('delete' in data) {
+        const messageToDelete = document.querySelector(`[data-message-id="${data.delete}"]`);
+        if (messageToDelete) {
+            messageToDelete.parentNode.removeChild(messageToDelete);
+        }
+        return; // Stop further execution since this is a delete command.
+    }
+
+    if ('edit' in data) {
+        const messageToEdit = document.querySelector(`[data-message-id="${data.edit}"]`);
+        if (messageToEdit) {
+            const messageContentElement = messageToEdit.querySelector('p.text-sm');
+            messageContentElement.textContent = data.editContent;
+            const messageUpdatedAtElement = messageToEdit.querySelector('span.message-timestamp');
+            messageUpdatedAtElement.textContent = "Edited at " + data.editTimestamp;
+        }
+        return;
+    }
+
+    let newMessage;
+    if (data.sender === '{{ currentUser.username }}') {
+        newMessage = createUserMessageBubble(data);
+    } else {
+        newMessage = createOtherMessageBubble(data);
+    }
+
+    messageList.appendChild(newMessage);
 };
