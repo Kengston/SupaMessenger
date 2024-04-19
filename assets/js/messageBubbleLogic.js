@@ -1,6 +1,6 @@
 const createUserMessageBubble = (message) => {
     const messageItem = document.createElement('div');
-    messageItem.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg', 'flex', 'flex-col', 'space-y-3', 'mr-auto', 'bg-gray-200', 'text-white', 'animate__animated', 'animate__fadeInRight');
+    messageItem.classList.add('message-item', 'py-2', 'px-6', 'rounded-lg', 'max-w-lg', 'flex', 'flex-col', 'space-y-3', 'ml-auto', 'bg-gray-200', 'text-white', 'animate__animated', 'animate__fadeInRight');
     messageItem.setAttribute('data-message-id', message.id);
 
     const flexContainer = document.createElement('div');
@@ -111,7 +111,7 @@ const createUserMessageBubble = (message) => {
 
 const createOtherMessageBubble = (message) => {
     const messageItem = document.createElement('div');
-    messageItem.classList.add('message-item', 'py-2', 'pr-6', 'pl-24', 'rounded-lg', 'max-w-lg', 'flex', 'flex-col', 'space-y-3', 'ml-auto', 'bg-gray-200', 'text-gray-800', 'animate__animated', 'animate__fadeInLeft');
+    messageItem.classList.add('message-item', 'py-2', 'pr-6', 'rounded-lg', 'max-w-lg', 'flex', 'flex-col', 'space-y-3', 'mr-auto', 'bg-gray-200', 'text-gray-800', 'animate__animated', 'animate__fadeInLeft');
     messageItem.setAttribute('data-message-id', message.id);
 
     const flexContainer = document.createElement('div');
@@ -123,7 +123,7 @@ const createOtherMessageBubble = (message) => {
     image.setAttribute('alt', 'User image');
 
     const messageContentContainer = document.createElement('div');
-    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-blue-300');
+    messageContentContainer.classList.add('flex', 'flex-col', 'w-full', 'max-w-[420px]', 'leading-1.5', 'p-4', 'border-gray-200', 'rounded-e-xl', 'rounded-es-xl', 'bg-gray-100');
 
     const senderInfo = document.createElement('div');
     senderInfo.classList.add('flex', 'items-center', 'space-x-2', 'rtl:space-x-reverse');
