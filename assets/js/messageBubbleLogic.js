@@ -229,6 +229,107 @@ const createOtherMessageBubble = (message) => {
     return messageItem;
 };
 
+document.addEventListener('click', function(event) {
+    // Check if the clicked element is an edit button
+    if (event.target.classList.contains('message-edit-btn')) {
+        event.preventDefault(); // prevent the default action of clicking a link
+        const messageId = event.target.dataset.messageId;
+        const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
+        const messageContent = messageItem.querySelector('.message-content');
+        const editForm = messageItem.querySelector('.message-edit-form');
+
+        // Toggle visibility between content and the edit form
+        messageContent.classList.toggle('hidden');
+        editForm.classList.toggle('hidden');
+
+        // Getting the submit and cancel buttons, and the edit input
+        let submitButton = editForm.querySelector('.btn-submit');
+        let cancelButton = editForm.querySelector('.btn-cancel');
+        const editInput = editForm.querySelector('input');
+
+        // Clone the submit and cancel buttons to remove existing event listeners
+        const newSubmitButton = submitButton.cloneNode(true);
+        submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+        submitButton = newSubmitButton;
+
+        const newCancelButton = cancelButton.cloneNode(true);
+        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+        cancelButton = newCancelButton;
+
+        // Event listener for the 'Submit' button
+        submitButton.addEventListener('click', function(ev) {
+            ev.preventDefault();
+
+            const editedContent = editInput.value;
+            const messageId = messageItem.dataset.messageId;
+
+            // Send an AJAX request to the Symfony controller endpoint
+            fetch(`/user/dialog/message/edit/${messageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', // Add this header to indicate an AJAX request
+                },
+                body: JSON.stringify({ content: editedContent }), // Send the edited content in the request body
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update message');
+                    }
+                    // Update the message content and hide the form
+                    messageContent.textContent = editedContent;
+                    messageContent.classList.remove('hidden');
+                    editForm.classList.add('hidden');
+
+                    const messageUpdatedAtElement = messageItem.querySelector('.message-timestamp');
+                })
+                .catch(error => {
+                    console.error('Error updating message:', error);
+                });
+
+        });
+
+        // Event listener for the 'Cancel' button
+        cancelButton.addEventListener('click', function(ev) {
+            ev.preventDefault();
+
+            // Reset the input value and hide the form
+            editInput.value = messageContent.textContent;
+
+            messageContent.classList.remove('hidden');
+            editForm.classList.add('hidden');
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const inputElement = document.querySelector('#message_photoData');
+    const iconElement = document.querySelector('.fa-dynamic-icon');
+
+    inputElement.addEventListener('change', function () {
+        if (this.files && this.files.length > 0) {
+            // A file has been selected
+            iconElement.classList.remove('far', 'fa-image', 'text-gray-600');
+            iconElement.classList.add('fa-solid', 'fa-xmark');
+        } else {
+            // No file selected
+            iconElement.classList.add('far', 'fa-image', 'text-gray-600');
+            iconElement.classList.remove('fa-solid', 'fa-xmark');
+        }
+    });
+
+    iconElement.addEventListener('click', function () {
+        // Check if the icon is in 'cancel' mode
+        if (iconElement.classList.contains('fa-xmark')) {
+            // Clear the file input
+            inputElement.value = '';
+            // Change the icon back to the image icon
+            iconElement.classList.add('far', 'fa-image', 'text-gray-600');
+            iconElement.classList.remove('fa-solid', 'fa-xmark');
+        }
+    });
+});
+
 eventSource.onmessage = function(event) {
     const data = JSON.parse(event.data);
     const messageList = document.getElementById('message-list');
