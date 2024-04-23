@@ -43,6 +43,19 @@ class MessageRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findLastMessageFromUser(User $user) {
+        // Building the query
+        $qb = $this->createQueryBuilder('m');
+        $qb ->select('m')
+            ->where('m.sender = :user')
+            ->setParameter('user', $user)
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults(1);
+
+        // Execute the query
+        return $qb->getQuery()->getSingleResult();
+    }
+
 //    /**
 //     * @return Message[] Returns an array of Message objects
 //     */

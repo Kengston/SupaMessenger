@@ -93,8 +93,11 @@ class DialogController extends AbstractController
                         'photoData' => $photoFilename
                     ])
                 );
+
                 $publisher($senderUpdate);
                 $publisher($recipientUpdate);
+
+                $this->userService->updateUserLastMessage($currentUser, $newMessage);
             }
 
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);

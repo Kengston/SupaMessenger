@@ -35,6 +35,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $avatarFileName = null;
 
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $lastMessageContent = null;
+
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
@@ -110,6 +113,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatarFileName(string $avatarFileName): self
     {
         $this->avatarFileName = $avatarFileName;
+
+        return $this;
+    }
+
+    public function getLastMessageContent(): ?string
+    {
+        return $this->lastMessageContent;
+    }
+
+    public function setLastMessageContent(string $lastMessageContent): self
+    {
+        $this->lastMessageContent = $lastMessageContent;
 
         return $this;
     }
