@@ -42,7 +42,16 @@
                     {% for user in users %}
                         <li class="animate__animated animate__fadeIn">
                             <!-- User List Item -->
-                            <a class="block py-2 px-6 hover:bg-gray-200 rounded-lg" href="{{ path('app_dialog', {id: user.id}) }}">{{ user.username }}</a>
+                            <a class="block py-2 px-6 hover:bg-gray-200 rounded-lg flex items-center" href="{{ path('app_dialog', {id: user.id}) }}">
+                                <div class="w-8 h-8 mr-3">
+                                    <img class="w-full h-full rounded-full border border-gray-600"
+                                         src="{{ asset('avatars/' ~ (user.avatarFileName ?? 'user-tie-solid.svg')) }}" alt="{{ user.username }}">
+                                </div>
+                                <div>
+                                    <h1 class="text-lg font-bold">{{ user.username }}</h1>
+                                    <p class="text-sm text-gray-500">Hello!</p>
+                                </div>
+                            </a>
                         </li>
                     {% endfor %}
                 </ul>
