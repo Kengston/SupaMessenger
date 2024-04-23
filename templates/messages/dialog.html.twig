@@ -204,7 +204,11 @@
             {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder', 'photoData': 'photoFile-placeholder'}} %}
         </script>
 
-        {{ encore_entry_script_tags('createMessageLogic') }}
+        {{ encore_entry_script_tags('messageBubbleLogic') }}
+
+        {{ encore_entry_script_tags('messageFormLogic') }}
+
+        {{ encore_entry_script_tags('userStatusLogic') }}
 
         <script>
 
@@ -216,175 +220,6 @@
                 messageList.scrollTop = messageList.scrollHeight;
             };
 
-            document.addEventListener('DOMContentLoaded', function() {
-                const emojiMenu = document.getElementById('dropdownMenuEmoji');
-                const messageContentInput = document.getElementById('message_content');
-
-                // Add event listener to each emoji button
-                const emojiButtons = document.querySelectorAll('.emoji-btn');
-                emojiButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        // Get the emoji from the clicked button
-                        const emoji = button.textContent;
-
-                        // Insert the emoji into the message form content input field
-                        if (messageContentInput) {
-                            messageContentInput.value += emoji;
-
-                            console.log('Message content:', messageContentInput.value); // Debugging
-                        } else {
-                            console.error('Message content input field not found.'); // Debugging
-                        }
-
-                    });
-                });
-            });
-
-            document.addEventListener('click', function(event) {
-                // Check if the clicked element is an edit button
-                if (event.target.classList.contains('message-edit-btn')) {
-                    event.preventDefault(); // prevent the default action of clicking a link
-                    const messageId = event.target.dataset.messageId;
-                    const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
-                    const messageContent = messageItem.querySelector('.message-content');
-                    const editForm = messageItem.querySelector('.message-edit-form');
-
-                    // Toggle visibility between content and the edit form
-                    messageContent.classList.toggle('hidden');
-                    editForm.classList.toggle('hidden');
-
-                    // Getting the submit and cancel buttons, and the edit input
-                    let submitButton = editForm.querySelector('.btn-submit');
-                    let cancelButton = editForm.querySelector('.btn-cancel');
-                    const editInput = editForm.querySelector('input');
-
-                    // Clone the submit and cancel buttons to remove existing event listeners
-                    const newSubmitButton = submitButton.cloneNode(true);
-                    submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
-                    submitButton = newSubmitButton;
-
-                    const newCancelButton = cancelButton.cloneNode(true);
-                    cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-                    cancelButton = newCancelButton;
-
-                    // Event listener for the 'Submit' button
-                    submitButton.addEventListener('click', function(ev) {
-                        ev.preventDefault();
-
-                        const editedContent = editInput.value;
-                        const messageId = messageItem.dataset.messageId;
-
-                        // Send an AJAX request to the Symfony controller endpoint
-                        fetch(`/user/dialog/message/edit/${messageId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest', // Add this header to indicate an AJAX request
-                            },
-                            body: JSON.stringify({ content: editedContent }), // Send the edited content in the request body
-                        })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Failed to update message');
-                                }
-                                // Update the message content and hide the form
-                                messageContent.textContent = editedContent;
-                                messageContent.classList.remove('hidden');
-                                editForm.classList.add('hidden');
-
-                                const messageUpdatedAtElement = messageItem.querySelector('.message-timestamp');
-                            })
-                            .catch(error => {
-                                console.error('Error updating message:', error);
-                            });
-
-                    });
-
-                    // Event listener for the 'Cancel' button
-                    cancelButton.addEventListener('click', function(ev) {
-                        ev.preventDefault();
-
-                        // Reset the input value and hide the form
-                        editInput.value = messageContent.textContent;
-
-                        messageContent.classList.remove('hidden');
-                        editForm.classList.add('hidden');
-                    });
-                }
-            });
-
-            document.addEventListener('DOMContentLoaded', (event) => {
-                const inputElement = document.querySelector('#message_photoData');
-                const iconElement = document.querySelector('.fa-dynamic-icon');
-
-                inputElement.addEventListener('change', function () {
-                    if (this.files && this.files.length > 0) {
-                        // A file has been selected
-                        iconElement.classList.remove('far', 'fa-image', 'text-gray-600');
-                        iconElement.classList.add('fa-solid', 'fa-xmark');
-                    } else {
-                        // No file selected
-                        iconElement.classList.add('far', 'fa-image', 'text-gray-600');
-                        iconElement.classList.remove('fa-solid', 'fa-xmark');
-                    }
-                });
-
-                iconElement.addEventListener('click', function () {
-                    // Check if the icon is in 'cancel' mode
-                    if (iconElement.classList.contains('fa-xmark')) {
-                        // Clear the file input
-                        inputElement.value = '';
-                        // Change the icon back to the image icon
-                        iconElement.classList.add('far', 'fa-image', 'text-gray-600');
-                        iconElement.classList.remove('fa-solid', 'fa-xmark');
-                    }
-                });
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('dropdownUserStatusIconButton').addEventListener('click', function() {
-                    let iconElementNormal = document.getElementById('iconNormal');
-                    let iconElementAnimated = document.getElementById('iconAnimated');
-                    iconElementNormal.classList.toggle('hidden');
-                    iconElementAnimated.classList.toggle('hidden');
-                });
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('dropdownUserStatusIconMenu').addEventListener('click', function(event) {
-                    let target = event.target;
-                    if (target.tagName === 'LI') {
-                        let status = target.getAttribute('data-status');
-                        let statusDot = document.getElementById('statusDot');
-                        let statusText = document.getElementById('statusText');
-                        let dropdownMenu = document.getElementById('dropdownUserStatusIconMenu');
-                        let iconElementNormal = document.getElementById('iconNormal');
-                        let iconElementAnimated = document.getElementById('iconAnimated');
-
-                        // Update status dot color
-                        if (status === 'Online') {
-                            statusDot.classList.remove('bg-orange-400', 'bg-red-400');
-                            statusDot.classList.add('bg-green-500');
-                        } else if (status === 'Busy') {
-                            statusDot.classList.remove('bg-green-500', 'bg-red-400');
-                            statusDot.classList.add('bg-orange-400');
-                        } else if (status === 'Offline') {
-                            statusDot.classList.remove('bg-green-500', 'bg-orange-400');
-                            statusDot.classList.add('bg-red-400');
-                        }
-
-                        // Update status text
-                        statusText.textContent = status;
-
-                        // Close the dropdown menu
-                        dropdownMenu.classList.add('hidden');
-
-                        // Show iconElementNormal and hide iconElementAnimated
-                        iconElementNormal.classList.remove('hidden');
-                        iconElementAnimated.classList.add('hidden');
-                    }
-                });
-            });
         </script>
     {% endif %}
 {% endblock %}
