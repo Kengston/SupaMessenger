@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Message;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -31,6 +32,13 @@ class UserService
         }
 
         $user->setAvatarFileName($avatarPath);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    public function updateUserLastMessage(User $user, Message $userMessage)
+    {
+        $user->setLastMessageContent($userMessage->getContent());
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
