@@ -105,6 +105,14 @@ class DialogController extends AbstractController
 
         $users = $this->userRepository->findAll();
 
+        if ($selectedUser) {
+            $this->messageService->markDialogAsRead($currentUser, $selectedUser);
+        }
+
+        foreach($users as $user) {
+            $user->hasUnreadMessages = $this->messageService->hasUnreadMessages($currentUser, $user);
+        }
+
         return $this->render('messages/dialog.html.twig', [
             'selectedUser' => $selectedUser,
             'selectedUserChangeStatusAt' => $selectedUserChangeStatusAt,

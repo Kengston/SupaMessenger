@@ -38,6 +38,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $lastMessageContent = null;
 
+    public $hasUnreadMessages = false;
+
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 

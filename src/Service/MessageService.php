@@ -93,4 +93,28 @@ class MessageService
 
         return $formattedMessages;
     }
+
+    public function markDialogAsRead(User $currentUser, User $selectedUser): void
+    {
+        $messages = $this->messageRepository->findBy(
+            ['sender' => $selectedUser, 'recipient' => $currentUser]
+        );
+
+        foreach ($messages as $message) {
+            if (!$message->isRead()) {
+                $message->setRead(true);
+                $this->entityManager->persist($message);
+                $this->entityManager->flush();
+            }
+        }
+    }
+
+    public function hasUnreadMessages(User $currentUser, User $otherUser) {
+        $unreadMessages = $this->messageRepository->findBy([
+            'read' => false,
+            'sender' => $otherUser,
+            'recipient' => $currentUser,
+        ]);
+        return count($unreadMessages) > 0;
+    }
 }

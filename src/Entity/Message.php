@@ -28,6 +28,9 @@ class Message
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $photoData = null;
 
+    #[ORM\Column(type: "boolean", options: ["default" => false])]
+    private ?bool $read = false;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
@@ -96,6 +99,18 @@ class Message
     public function setPhotoData(?string $photoData): self
     {
         $this->photoData = $photoData;
+
+        return $this;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->read;
+    }
+
+    public function setRead(bool $read): self
+    {
+        $this->read = $read;
 
         return $this;
     }
