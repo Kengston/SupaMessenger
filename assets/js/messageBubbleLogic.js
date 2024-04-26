@@ -8,7 +8,7 @@ const createUserMessageBubble = (message) => {
 
     const image = document.createElement('img');
     image.classList.add('w-8', 'h-8', 'rounded-full');
-    image.setAttribute('src', 'https://static.vecteezy.com/system/resources/previews/002/592/204/original/little-student-afro-boy-avatar-character-free-vector.jpg');
+    image.setAttribute('src', window.location.origin + '/avatars/' + message.senderAvatar); // Change this line to use senderAvatar from the message
     image.setAttribute('alt', 'User image');
 
     const messageContentContainer = document.createElement('div');
@@ -119,7 +119,7 @@ const createOtherMessageBubble = (message) => {
 
     const image = document.createElement('img');
     image.classList.add('w-8', 'h-8', 'rounded-full');
-    image.setAttribute('src', 'https://i.pinimg.com/736x/45/6a/e4/456ae4e5ae1e340ee824209fd8874c8b.jpg');
+    image.setAttribute('src', window.location.origin + '/avatars/' + message.senderAvatar); // Change this line to use senderAvatar from the message
     image.setAttribute('alt', 'User image');
 
     const messageContentContainer = document.createElement('div');

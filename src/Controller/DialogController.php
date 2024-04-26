@@ -75,6 +75,7 @@ class DialogController extends AbstractController
                     '/dialog/user/'.$currentUser->getId(),
                     json_encode([
                         'sender' => $currentUser->getUsername(),
+                        'senderAvatar' => $currentUser->getAvatarFileName(),
                         'id' => $newMessage->getId(),
                         'content' => $newMessage->getContent(),
                         'updatedAt' => $updatedAt,
@@ -86,6 +87,7 @@ class DialogController extends AbstractController
                     '/dialog/user/'.$selectedUser->getId(),
                     json_encode([
                         'sender' => $currentUser->getUsername(),
+                        'senderAvatar' => $currentUser->getAvatarFileName(),
                         'id' => $newMessage->getId(),
                         'content' => $newMessage->getContent(),
                         'updatedAt' => $updatedAt,
