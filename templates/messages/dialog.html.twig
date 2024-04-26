@@ -49,9 +49,10 @@
                                              src="{{ asset('avatars/' ~ (user.avatarFileName ?? 'user-tie-solid.svg')) }}" alt="{{ user.username }}">
                                     </div>
                                     <div>
-                                        <h1 class="text-lg font-bold">{{ user.username }}
+                                        <h1 class="text-lg font-bold">
+                                            {{ user.username }}
                                             <!-- Check if the user has unread messages -->
-                                            {% if user.hasUnreadMessages %}
+                                            {% if unreadMessageStatusArray[user.id] ?? false %}
                                                 <!-- If the user has unread messages, add a blue dot indicator -->
                                                 <span class="w-2 h-2 ml-2 inline-block bg-blue-500 rounded-full"></span>
                                             {% endif %}

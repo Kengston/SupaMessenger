@@ -117,4 +117,15 @@ class MessageService
         ]);
         return count($unreadMessages) > 0;
     }
+
+    public function getUnreadMessagesStatusForUsers(User $currentUser, array $users): array
+    {
+        $unreadMessagesStatus = [];
+
+        foreach ($users as $user) {
+            $unreadMessagesStatus[$user->getId()] = $this->hasUnreadMessages($currentUser, $user);
+        }
+
+        return $unreadMessagesStatus;
+    }
 }
