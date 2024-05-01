@@ -160,16 +160,15 @@
 
         {% if selectedUser %}
 
-            <!-- Message List -->
+            {% set selectedUserData = { 'username': selectedUser.username, 'avatarFileName': selectedUser.avatarFileName} %}
+            {% set currentUserData = { 'username': currentUser.username, 'avatarFileName': currentUser.avatarFileName } %}
 
-            <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5">
-                {% for message in messages %}
-                    {% if message.sender == selectedUser.username %}
-                        {% include 'messages/other_message.html.twig' with {'message': message} %}
-                    {% else %}
-                        {% include 'messages/user_message.html.twig' with {'message': message} %}
-                    {% endif %}
-                {% endfor %}
+            <!-- Message List -->
+            <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5"
+                 data-selected-user="{{ selectedUserData|json_encode }}"
+                 data-current-user="{{ currentUserData|json_encode }}"
+                 data-messages="{{ messages|json_encode }}">
+
             </div>
 
                 <!-- Message Form -->
@@ -218,12 +217,16 @@
 {% block javascripts %}
 
     {% if selectedUser %}
-        <script type="text/template" id="user-message-template">
-            {% include 'messages/user_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder', 'photoData': 'photoFile-placeholder'}} %}
-        </script>
 
-        <script type="text/template" id="other-message-template">
-            {% include 'messages/other_message.html.twig' with {'message': {'id': 'id-placeholder', 'sender': 'sender-placeholder', 'content': 'content-placeholder', 'createdAt': 'createdAt-placeholder', 'updatedAt': 'updatedAt-placeholder', 'photoData': 'photoFile-placeholder'}} %}
+        <script>
+
+            const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");
+
+            window.onload = function() {
+                const messageList = document.getElementById('message-list');
+                messageList.scrollTop = messageList.scrollHeight;
+            };
+
         </script>
 
         {{ encore_entry_script_tags('messageBubbleLogic') }}
@@ -232,16 +235,8 @@
 
         {{ encore_entry_script_tags('userStatusLogic') }}
 
-        <script>
-
-            const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");
+        {{ encore_entry_script_tags('message-list') }}
 
 
-            window.onload = function() {
-                const messageList = document.getElementById('message-list');
-                messageList.scrollTop = messageList.scrollHeight;
-            };
-
-        </script>
     {% endif %}
 {% endblock %}

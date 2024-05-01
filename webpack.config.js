@@ -24,6 +24,7 @@ Encore
     .addEntry('messageBubbleLogic', './assets/js/messageBubbleLogic.js')
     .addEntry('messageFormLogic', './assets/js/messageFormLogic.js')
     .addEntry('userStatusLogic', './assets/js/userStatusLogic.js')
+    .addEntry('message-list', './assets/js/message-list.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
