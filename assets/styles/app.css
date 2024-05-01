@@ -1,5 +1,7 @@
 @import url('../../node_modules/animate.css/animate.css');
 
+@import '/node_modules/flowbite-vue/dist/index.css';
+
 @tailwind base;
 
 @tailwind components;

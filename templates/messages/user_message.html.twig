@@ -21,13 +21,13 @@
                     <button class="btn btn-cancel text-gray-900 ml-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             </div>
-                    <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
-                        {% if message.updatedAt is not null %}
-                            Edited at {{ message.updatedAt }}
-                        {% else %}
-                            Delivered
-                        {% endif %}
-                    </span>
+            <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
+                {% if message.updatedAt is not null %}
+                    Edited at {{ message.updatedAt }}
+                {% else %}
+                    Delivered
+                {% endif %}
+            </span>
         </div>
         <button id="dropdownMenuIconButton_{{ message.id }}" data-dropdown-toggle="dropdownDots_{{ message.id }}" data-dropdown-placement="top" class="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-gray-200 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50" type="button">
             <svg class="svg-inline--fa fa-ellipsis-v fa-w-6 text-xl text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false" viewBox="0 0 192 512">

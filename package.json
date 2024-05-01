@@ -2,14 +2,12 @@
     "devDependencies": {
         "@babel/core": "^7.17.0",
         "@babel/preset-env": "^7.16.0",
-        "@symfony/webpack-encore": "^4.0.0",
+        "@symfony/webpack-encore": "^4.6.1",
         "core-js": "^3.23.0",
         "postcss-loader": "^7.3.4",
         "regenerator-runtime": "^0.13.9",
         "tailwindcss": "^3.4.1",
-        "vue": "^2.7.16",
-        "vue-loader": "^15.11.1",
-        "vue-template-compiler": "^2.7.16",
+        "vue": "^3.4.26",
         "webpack": "^5.74.0",
         "webpack-cli": "^4.10.0",
         "webpack-notifier": "^1.15.0"
@@ -23,12 +21,16 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "@vue/compiler-sfc": "^3.4.26",
         "animate.css": "^4.1.1",
         "autoprefixer": "^10.4.17",
         "flowbite": "^2.3.0",
+        "flowbite-vue": "^0.1.4",
         "glob-all": "^3.3.1",
         "path": "^0.12.7",
         "postcss-import": "^16.0.1",
-        "purgecss-webpack-plugin": "^5.0.0"
+        "purgecss-webpack-plugin": "^5.0.0",
+        "vue-loader": "^17.4.2",
+        "vue-template-compiler": "^2.7.16"
     }
 }
