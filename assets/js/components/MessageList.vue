@@ -1,5 +1,3 @@
-<!-- MessageList.vue -->
-
 <template>
 
   <div id="message-list">
