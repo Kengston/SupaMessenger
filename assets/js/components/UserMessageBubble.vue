@@ -51,7 +51,12 @@
             <a href="#" data-message-id="{{ message.id }}" class="message-edit-btn block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
           </li>
           <li>
-            <a href="message/delete/{{ message.id }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
+            <a
+                :href="'message/delete/' + message.id"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              Delete
+            </a>
           </li>
         </ul>
       </div>

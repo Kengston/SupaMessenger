@@ -32,6 +32,7 @@ class MessageController extends AbstractController
     #[Route('user/dialog/message/delete/{messageId}', name: 'app_delete_message')]
     public function delete($messageId, PublisherInterface $publisher)
     {
+
         $message = $this->messageRepository->findMessageById($messageId);
 
         if (!$message) {
