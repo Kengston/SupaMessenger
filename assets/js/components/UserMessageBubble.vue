@@ -15,9 +15,25 @@
           <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ message.createdAt }}</span>
         </div>
         <img v-if="message.photoData" :src="'/uploads/' + message.photoData" alt="Message Photo" class="max-w-xs mt-2" />
-        <p class="message-content text-lg max-w-[420px] font-light py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
+
+        <div v-if="!editMode" class="message-content text-lg max-w-[420px] font-light py-2.5 text-gray-900 dark:text-white">{{ message.content }}</div>
+
+
+        <!-- Edit mode -->
+        <div v-if="editMode" class="flex items-center">
+          <input class="message-content-form max-w-[420px] font-light text-gray-900 bg-white border border-gray-200 rounded p-2 mr-1" v-model="editInputContent" type="text">
+
+          <button @click="submitEdit" class="btn-submit bg-white text-black border border-gray-200 rounded p-2 mr-1">
+            <i class="fa-solid fa-check"></i>
+          </button>
+
+          <button @click="cancelEdit" class="btn-cancel bg-white text-black border border-gray-200 rounded p-2">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <!-- End of Edit mode -->
+
         <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
-          <!-- Here you might want to show `read` or `seen` instead. -->
           <template v-if="message.updatedAt">Edited at {{ message.updatedAt }}</template>
           <template v-else>Delivered</template>
         </span>
@@ -47,8 +63,8 @@
           <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
           </li>
-          <li>
-            <a href="#" data-message-id="{{ message.id }}" class="message-edit-btn block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+          <li class="hover:bg-gray-100">
+            <button class="message-edit-btn block px-4 py-2" @click="toggleEdit">Edit</button>
           </li>
           <li>
             <a
@@ -74,20 +90,63 @@ export default {
   },
   data() {
     return {
+      editMode: false,
+      editInputContent: "",
       dropdowns: {}, // Storing all instances in `dropdowns` object.
     };
   },
-  created() {
-    // Initialize your dropdown instance when the component has been created.
+  mounted() {
     this.dropdowns[this.message.id] = new Dropdown(
         document.getElementById('dropdownDots_' + this.message.id),
         document.getElementById('dropdownMenuIconButton_' + this.message.id)
     );
   },
+
   methods: {
     toggleDropdown(messageId) {
       this.dropdowns[messageId].toggle();
     },
+    toggleEdit() {
+      this.editMode = !this.editMode;
+      this.editInputContent = this.message.content; // Copy the content to editInputContent when entering edit mode
+    },
+    submitEdit() {
+      // Process the submission here
+      this.editMessage();
+    },
+    cancelEdit() {
+      // Cancel the edit here
+      this.editMode = false;
+    },
+    editMessage() {
+      // Use current value of editInputContent
+      const editedContent = this.editInputContent;
+      const messageId = this.message.id;
+
+      fetch(`/user/dialog/message/edit/${messageId}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: editedContent
+        })
+      })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // If successful, update message.content to reflect the change
+              this.message.content = editedContent;
+              this.editMode = false; // Exit the edit mode
+            } else {
+              throw new Error(data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+    }
   },
 };
 </script>

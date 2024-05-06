@@ -38,6 +38,7 @@ export default {
       const messageList = this.$el;  // using this.$el gets the DOM element of the component
       messageList.scrollTop = messageList.scrollHeight;
     },
+
   },
 }
 </script>
