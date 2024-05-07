@@ -167,8 +167,9 @@
             <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5"
                  data-selected-user="{{ selectedUserData|json_encode }}"
                  data-current-user="{{ currentUserData|json_encode }}"
-                 data-messages="{{ messages|json_encode }}">
-
+                 data-messages="{{ messages|json_encode }}"
+                 data-mercure-url="http://127.0.0.1:3001/.well-known/mercure?topic=/dialog/user/{{ currentUser.id }}"
+                >
             </div>
 
                 <!-- Message Form -->
@@ -220,7 +221,7 @@
 
         <script>
 
-            const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");
+            {#const eventSource = new EventSource("{{ mercure('/dialog/user/' ~ currentUser.id)|escape('js') }}");#}
 
             window.onload = function() {
                 const messageList = document.getElementById('message-list');
