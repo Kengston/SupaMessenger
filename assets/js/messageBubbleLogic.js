@@ -1,76 +1,3 @@
-document.addEventListener('click', function(event) {
-    // Check if the clicked element is an edit button
-    if (event.target.classList.contains('message-edit-btn')) {
-        event.preventDefault(); // prevent the default action of clicking a link
-        const messageId = event.target.dataset.messageId;
-        const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
-        const messageContent = messageItem.querySelector('.message-content');
-        const editForm = messageItem.querySelector('.message-edit-form');
-
-        // Toggle visibility between content and the edit form
-        messageContent.classList.toggle('hidden');
-        editForm.classList.toggle('hidden');
-
-        // Getting the submit and cancel buttons, and the edit input
-        let submitButton = editForm.querySelector('.btn-submit');
-        let cancelButton = editForm.querySelector('.btn-cancel');
-        const editInput = editForm.querySelector('input');
-
-        // Clone the submit and cancel buttons to remove existing event listeners
-        const newSubmitButton = submitButton.cloneNode(true);
-        submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
-        submitButton = newSubmitButton;
-
-        const newCancelButton = cancelButton.cloneNode(true);
-        cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-        cancelButton = newCancelButton;
-
-        // Event listener for the 'Submit' button
-        submitButton.addEventListener('click', function(ev) {
-            ev.preventDefault();
-
-            const editedContent = editInput.value;
-            const messageId = messageItem.dataset.messageId;
-
-            // Send an AJAX request to the Symfony controller endpoint
-            fetch(`/user/dialog/message/edit/${messageId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest', // Add this header to indicate an AJAX request
-                },
-                body: JSON.stringify({ content: editedContent }), // Send the edited content in the request body
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to update message');
-                    }
-                    // Update the message content and hide the form
-                    messageContent.textContent = editedContent;
-                    messageContent.classList.remove('hidden');
-                    editForm.classList.add('hidden');
-
-                    const messageUpdatedAtElement = messageItem.querySelector('.message-timestamp');
-                })
-                .catch(error => {
-                    console.error('Error updating message:', error);
-                });
-
-        });
-
-        // Event listener for the 'Cancel' button
-        cancelButton.addEventListener('click', function(ev) {
-            ev.preventDefault();
-
-            // Reset the input value and hide the form
-            editInput.value = messageContent.textContent;
-
-            messageContent.classList.remove('hidden');
-            editForm.classList.add('hidden');
-        });
-    }
-});
-
 document.addEventListener('DOMContentLoaded', (event) => {
     const inputElement = document.querySelector('#message_photoData');
     const iconElement = document.querySelector('.fa-dynamic-icon');
@@ -99,38 +26,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
-eventSource.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    const messageList = document.getElementById('message-list');
-
-    if ('delete' in data) {
-        const messageToDelete = document.querySelector(`[data-message-id="${data.delete}"]`);
-        if (messageToDelete) {
-            messageToDelete.parentNode.removeChild(messageToDelete);
-        }
-        return; // Stop further execution since this is a delete command.
-    }
-
-    if ('edit' in data) {
-        const messageToEdit = document.querySelector(`[data-message-id="${data.edit}"]`);
-        if (messageToEdit) {
-            const messageContentElement = messageToEdit.querySelector('p.text-sm');
-            messageContentElement.textContent = data.editContent;
-            const messageUpdatedAtElement = messageToEdit.querySelector('span.message-timestamp');
-            messageUpdatedAtElement.textContent = "Edited at " + data.editTimestamp;
-        }
-        return;
-    }
-
-    let newMessage;
-    if (data.sender === '{{ currentUser.username }}') {
-        newMessage = createUserMessageBubble(data);
-    } else {
-        newMessage = createOtherMessageBubble(data);
-    }
-
-    messageList.appendChild(newMessage);
-};
+// eventSource.onmessage = function(event) {
+//     const data = JSON.parse(event.data);
+//     const messageList = document.getElementById('message-list');
+//
+//     if ('delete' in data) {
+//         const messageToDelete = document.querySelector(`[data-message-id="${data.delete}"]`);
+//         if (messageToDelete) {
+//             messageToDelete.parentNode.removeChild(messageToDelete);
+//         }
+//         return; // Stop further execution since this is a delete command.
+//     }
+//
+//     if ('edit' in data) {
+//         const messageToEdit = document.querySelector(`[data-message-id="${data.edit}"]`);
+//         if (messageToEdit) {
+//             const messageContentElement = messageToEdit.querySelector('p.text-sm');
+//             messageContentElement.textContent = data.editContent;
+//             const messageUpdatedAtElement = messageToEdit.querySelector('span.message-timestamp');
+//             messageUpdatedAtElement.textContent = "Edited at " + data.editTimestamp;
+//         }
+//         return;
+//     }
+//
+//     let newMessage;
+//     if (data.sender === '{{ currentUser.username }}') {
+//         newMessage = createUserMessageBubble(data);
+//     } else {
+//         newMessage = createOtherMessageBubble(data);
+//     }
+//
+//     messageList.appendChild(newMessage);
+// };
 
 // const createUserMessageBubble = (message) => {
 //     const messageItem = document.createElement('div');
@@ -362,3 +289,76 @@ eventSource.onmessage = function(event) {
 //
 //     return messageItem;
 // };
+
+// document.addEventListener('click', function(event) {
+//     // Check if the clicked element is an edit button
+//     if (event.target.classList.contains('message-edit-btn')) {
+//         event.preventDefault(); // prevent the default action of clicking a link
+//         const messageId = event.target.dataset.messageId;
+//         const messageItem = document.querySelector(`[data-message-id="${messageId}"]`);
+//         const messageContent = messageItem.querySelector('.message-content');
+//         const editForm = messageItem.querySelector('.message-edit-form');
+//
+//         // Toggle visibility between content and the edit form
+//         messageContent.classList.toggle('hidden');
+//         editForm.classList.toggle('hidden');
+//
+//         // Getting the submit and cancel buttons, and the edit input
+//         let submitButton = editForm.querySelector('.btn-submit');
+//         let cancelButton = editForm.querySelector('.btn-cancel');
+//         const editInput = editForm.querySelector('input');
+//
+//         // Clone the submit and cancel buttons to remove existing event listeners
+//         const newSubmitButton = submitButton.cloneNode(true);
+//         submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+//         submitButton = newSubmitButton;
+//
+//         const newCancelButton = cancelButton.cloneNode(true);
+//         cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+//         cancelButton = newCancelButton;
+//
+//         // Event listener for the 'Submit' button
+//         submitButton.addEventListener('click', function(ev) {
+//             ev.preventDefault();
+//
+//             const editedContent = editInput.value;
+//             const messageId = messageItem.dataset.messageId;
+//
+//             // Send an AJAX request to the Symfony controller endpoint
+//             fetch(`/user/dialog/message/edit/${messageId}`, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'X-Requested-With': 'XMLHttpRequest', // Add this header to indicate an AJAX request
+//                 },
+//                 body: JSON.stringify({ content: editedContent }), // Send the edited content in the request body
+//             })
+//                 .then(response => {
+//                     if (!response.ok) {
+//                         throw new Error('Failed to update message');
+//                     }
+//                     // Update the message content and hide the form
+//                     messageContent.textContent = editedContent;
+//                     messageContent.classList.remove('hidden');
+//                     editForm.classList.add('hidden');
+//
+//                     const messageUpdatedAtElement = messageItem.querySelector('.message-timestamp');
+//                 })
+//                 .catch(error => {
+//                     console.error('Error updating message:', error);
+//                 });
+//
+//         });
+//
+//         // Event listener for the 'Cancel' button
+//         cancelButton.addEventListener('click', function(ev) {
+//             ev.preventDefault();
+//
+//             // Reset the input value and hide the form
+//             editInput.value = messageContent.textContent;
+//
+//             messageContent.classList.remove('hidden');
+//             editForm.classList.add('hidden');
+//         });
+//     }
+// });

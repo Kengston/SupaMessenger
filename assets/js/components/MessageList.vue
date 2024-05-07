@@ -2,7 +2,7 @@
 
   <div id="message-list">
     <!-- Loop over messages -->
-    <template v-for="(message, index) in messages" :key="index">
+    <template v-for="(message, index) in currentMessages" :key="index">
       <!-- Show other user's message -->
       <OtherMessageBubble
           v-if="message.sender === selectedUser.username"
@@ -25,21 +25,37 @@ import OtherMessageBubble from './OtherMessageBubble'
 import UserMessageBubble from './UserMessageBubble'
 
 export default {
-  components: {
-    OtherMessageBubble,
-    UserMessageBubble,
+  data() {
+    return {
+      currentMessages: this.messages
+    }
   },
-  props: ['selectedUser', 'currentUser', 'messages'],
-  created() {
-    this.scrollToBottom();
+  props: ['selectedUser', 'currentUser', 'mercureUrl', 'messages'],
+  mounted() {
+    console.log(this.mercureUrl);
+    const eventSource = new EventSource(this.mercureUrl);
+    eventSource.onmessage = event => {
+      const data = JSON.parse(event.data);
+
+      if ('delete' in data) {
+        this.currentMessages = this.currentMessages.filter(message => message.id !== data.delete);
+      } else if ('edit' in data) {
+        const rawMessage = this.currentMessages.find(message => message.id === data.edit);
+        if (rawMessage) {
+          rawMessage.content = data.editContent;
+          rawMessage.updatedAt = "Edited at " + data.editTimestamp;
+        }
+      } else if (data.sender) {
+        this.currentMessages.push(data);
+      }
+    };
   },
   methods: {
-    scrollToBottom() {
-      const messageList = this.$el;  // using this.$el gets the DOM element of the component
-      messageList.scrollTop = messageList.scrollHeight;
-    },
-
   },
-}
+  components: {
+    OtherMessageBubble,
+    UserMessageBubble
+  },
+};
 </script>
 

@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const props = {
             selectedUser: JSON.parse(el.dataset.selectedUser),
             currentUser: JSON.parse(el.dataset.currentUser),
-            messages: JSON.parse(el.dataset.messages)
+            messages: JSON.parse(el.dataset.messages),
+            mercureUrl: el.dataset.mercureUrl
         };
 
         createApp(MessageList, props).mount(el);
