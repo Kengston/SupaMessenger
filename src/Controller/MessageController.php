@@ -23,9 +23,7 @@ use function PHPUnit\Framework\throwException;
 class MessageController extends AbstractController
 {
     public function __construct(
-        private UserRepository $userRepository,
         private MessageService $messageService,
-        private UserService $userService,
         private MessageRepository $messageRepository
     ) {}
 

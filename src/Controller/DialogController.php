@@ -6,6 +6,7 @@ use App\Entity\Message;
 use App\Form\MessageType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\DialogService;
 use App\Service\MessageService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +22,8 @@ class DialogController extends AbstractController
     public function __construct(
         private UserRepository $userRepository,
         private MessageService $messageService,
-        private UserService $userService
+        private UserService $userService,
+        private DialogService $dialogService
     ) {}
 
     #[Route('/user/dialog/{id}', name: 'app_dialog')]
@@ -35,7 +37,7 @@ class DialogController extends AbstractController
         $selectedUser = $id ? $this->userRepository->find($id) : null;
         $selectedUserChangeStatusAt = $selectedUser?->getChangeStatusAt();
 
-        $messages = $selectedUser ? $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
+        $messages = $selectedUser ? $this->dialogService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
         $avatarForm->handleRequest($request);
         $messageForm->handleRequest($request);
@@ -105,13 +107,24 @@ class DialogController extends AbstractController
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
         }
 
-        $users = $this->userRepository->findAll();
-
         if ($selectedUser) {
-            $this->messageService->markDialogAsRead($currentUser, $selectedUser);
+            $this->dialogService->markDialogAsRead($currentUser, $selectedUser);
         }
 
+        $users = $this->userRepository->findAll();
+
         $unreadMessageStatusArray = $this->messageService->getUnreadMessagesStatusForUsers($currentUser, $users);
+        $usersArray = array_map(function ($user) {
+            return [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'avatarFileName' => $user->getAvatarFileName(),
+                'lastMessageContent' => $user->getLastMessageContent()
+            ];
+        }, $users);
+
+        $usersJson = json_encode($usersArray);
 
         return $this->render('messages/dialog.html.twig', [
             'unreadMessageStatusArray' => $unreadMessageStatusArray,
@@ -119,7 +132,7 @@ class DialogController extends AbstractController
             'selectedUserChangeStatusAt' => $selectedUserChangeStatusAt,
             'currentUser' => $currentUser,
             'messages' => $messages,
-            'users' => $users,
+            'users' => $usersJson,
             'avatarForm' => $avatarForm->createView(),
             'messageForm' => $messageForm->createView(),
             'id' => $id
@@ -131,7 +144,7 @@ class DialogController extends AbstractController
     {
         $currentUser = $this->getUser();
         $selectedUser = $this->userRepository->find($id);
-        $formattedMessages = $this->messageService->getFormattedDialogMessages($currentUser, $selectedUser);
+        $formattedMessages = $this->dialogService->getFormattedDialogMessages($currentUser, $selectedUser);
 
         return $this->json($formattedMessages);
     }
