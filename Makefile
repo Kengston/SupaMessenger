@@ -1,6 +1,9 @@
 start:
 	symfony serve --no-tls
 
+build:
+	npm run build
+
 dc_build:
 	docker-compose up
 

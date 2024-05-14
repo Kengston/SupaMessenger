@@ -65,50 +65,6 @@ class MessageService
         $this->entityManager->flush();
     }
 
-    public function getFormattedDialogMessages(User $currentUser, User $selectedUser): array
-    {
-        $messages = $this->messageRepository->findDialogMessages($currentUser, $selectedUser);
-        $formattedMessages = [];
-
-        foreach ($messages as $message) {
-            if (!$message->getDeleted() and $message !== null) {
-                $createdAt = $message->getCreatedAt();
-                $createdAtFormatted = $createdAt ? $createdAt->format('H:i') : null;
-
-                $updatedAt = $message->getUpdatedAt();
-                $updatedAtFormatted = $updatedAt ? $updatedAt->format('H:i') : null;
-
-                $photoData = $message->getPhotoData();
-
-                $formattedMessages[] = [
-                    'id' => $message->getId(),
-                    'sender' => $message->getSender()->getUsername(),
-                    'content' => $message->getContent(),
-                    'createdAt' => $createdAtFormatted,
-                    'updatedAt' => $updatedAtFormatted,
-                    'photoData' => $photoData
-                 ];
-            }
-        }
-
-        return $formattedMessages;
-    }
-
-    public function markDialogAsRead(User $currentUser, User $selectedUser): void
-    {
-        $messages = $this->messageRepository->findBy(
-            ['sender' => $selectedUser, 'recipient' => $currentUser]
-        );
-
-        foreach ($messages as $message) {
-            if (!$message->isRead()) {
-                $message->setRead(true);
-                $this->entityManager->persist($message);
-                $this->entityManager->flush();
-            }
-        }
-    }
-
     public function hasUnreadMessages(User $currentUser, User $otherUser) {
         $unreadMessages = $this->messageRepository->findBy([
             'read' => false,

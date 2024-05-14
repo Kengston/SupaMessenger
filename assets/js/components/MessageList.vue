@@ -32,7 +32,6 @@ export default {
   },
   props: ['selectedUser', 'currentUser', 'mercureUrl', 'messages'],
   mounted() {
-    console.log(this.mercureUrl);
     const eventSource = new EventSource(this.mercureUrl);
     eventSource.onmessage = event => {
       const data = JSON.parse(event.data);
@@ -43,7 +42,7 @@ export default {
         const rawMessage = this.currentMessages.find(message => message.id === data.edit);
         if (rawMessage) {
           rawMessage.content = data.editContent;
-          rawMessage.updatedAt = "Edited at " + data.editTimestamp;
+          rawMessage.updatedAt = data.editTimestamp;
         }
       } else if (data.sender) {
         this.currentMessages.push(data);
@@ -51,6 +50,7 @@ export default {
     };
   },
   methods: {
+
   },
   components: {
     OtherMessageBubble,
