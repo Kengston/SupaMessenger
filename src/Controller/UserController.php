@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
@@ -43,4 +45,5 @@ class UserController extends AbstractController
 
         return $this->json(['message' => 'User status updated']);
     }
+
 }

@@ -114,7 +114,6 @@ class DialogController extends AbstractController
         $users = $this->userRepository->findAll();
 
         $unreadMessageStatusArray = $this->messageService->getUnreadMessagesStatusForUsers($currentUser, $users);
-        
         $usersJson = json_encode($this->userService->getUsersListSerialized($users));
 
         return $this->render('messages/dialog.html.twig', [

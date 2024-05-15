@@ -24,6 +24,7 @@
         "@vue/compiler-sfc": "^3.4.26",
         "animate.css": "^4.1.1",
         "autoprefixer": "^10.4.17",
+        "axios": "^1.6.8",
         "flowbite": "^2.3.0",
         "flowbite-vue": "^0.1.4",
         "glob-all": "^3.3.1",
