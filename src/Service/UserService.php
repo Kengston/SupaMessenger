@@ -47,4 +47,17 @@ class UserService
     {
         return $this->targetDirectory;
     }
+
+    public function getUsersListSerialized($users): array
+    {
+        return array_map(function ($user) {
+            return [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'avatarFileName' => $user->getAvatarFileName(),
+                'lastMessageContent' => $user->getLastMessageContent()
+            ];
+        }, $users);
+    }
 }
