@@ -36,9 +36,17 @@
                 {% if selectedUser %}
 
                     <div class="flex items-center">
-                        <div class="w-12 h-12 relative">
+                        <div id="dropdownSelectedUserActionButton" data-dropdown-toggle="dropdownSelectedUserActionMenu" data-dropdown-placement="bottom" class="w-12 h-12 relative">
                             <img class="w-full h-full rounded-full border-4 border-gray-600 transform transition-transform duration-200 ease-in-out hover:scale-110" src="{{ asset('avatars/' ~ (selectedUser.avatarFileName ?? 'user-tie-solid.svg')) }}"
                                  alt="{{ selectedUser.username }}">
+                        </div>
+                        <div id="dropdownSelectedUserActionMenu" class="z-10 hidden bg-white border border-gray-200 rounded-lg shadow-md w-40">
+                            <ul>
+                                <li class="flex items-center py-2 px-4 bg-white text-red-500 hover:text-red-700 active:bg-red-200 transition-colors duration-200 cursor-pointer">
+                                    <span class="h-3 w-3 mb-3 mr-2"><i class="fa-solid fa-trash"></i></span>
+                                    <span class="ml-2">Delete dialog</span>
+                                </li>
+                            </ul>
                         </div>
                         <div class="ml-4">
                             <h1 class="text-lg font-bold">{{ selectedUser.username }}</h1>
