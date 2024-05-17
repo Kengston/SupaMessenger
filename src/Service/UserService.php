@@ -36,13 +36,6 @@ class UserService
         $this->entityManager->flush();
     }
 
-    public function updateUserLastMessage(User $user, Message $userMessage)
-    {
-        $user->setLastMessageContent($userMessage->getContent());
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-    }
-
     public function getTargetDirectory(): string
     {
         return $this->targetDirectory;

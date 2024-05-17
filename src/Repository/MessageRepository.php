@@ -43,17 +43,20 @@ class MessageRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findLastMessageFromUser(User $user) {
-        // Building the query
-        $qb = $this->createQueryBuilder('m');
-        $qb ->select('m')
-            ->where('m.sender = :user')
-            ->setParameter('user', $user)
-            ->orderBy('m.createdAt', 'DESC')
-            ->setMaxResults(1);
+    public function getLastMessageInDialog($user1, $user2)
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
-        // Execute the query
-        return $qb->getQuery()->getSingleResult();
+        $query = $queryBuilder->select('m')
+            ->from(Message::class, 'm')
+            ->where('(m.sender = :user1 AND m.recipient = :user2) OR (m.sender = :user2 AND m.recipient = :user1)')
+            ->orderBy('m.createdAt', 'DESC')
+            ->setParameter('user1', $user1)
+            ->setParameter('user2', $user2)
+            ->setMaxResults(1)
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
     }
 
 //    /**

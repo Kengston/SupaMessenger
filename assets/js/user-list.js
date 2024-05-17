@@ -7,10 +7,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (el !== null) {
 
+        console.log(JSON.parse(el.dataset.lastMessagesInDialogArray));
+
         const props = {
             users: JSON.parse(el.dataset.users),
             currentUser: JSON.parse(el.dataset.currentUser),
             unreadMessageStatusArray: JSON.parse(el.dataset.unreadMessageStatusArray),
+            lastMessagesInDialogArray: JSON.parse(el.dataset.lastMessagesInDialogArray)
         };
 
         createApp(UserList, props).mount(el);

@@ -58,4 +58,16 @@ class DialogService
             }
         }
     }
+
+    public function getLastMessagesInDialog(User $currentUser, array $users): array
+    {
+        $lastMessagesInDialog = [];
+
+        foreach ($users as $user) {
+            $lastMessage = $this->messageRepository->getLastMessageInDialog($currentUser, $user);
+            $lastMessagesInDialog[$user->getId()] = $lastMessage ? $lastMessage->getContent() : null;
+        }
+
+        return $lastMessagesInDialog;
+    }
 }
