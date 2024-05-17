@@ -100,8 +100,6 @@ class DialogController extends AbstractController
 
                 $publisher($senderUpdate);
                 $publisher($recipientUpdate);
-
-                $this->userService->updateUserLastMessage($currentUser, $newMessage);
             }
 
             return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
@@ -113,10 +111,12 @@ class DialogController extends AbstractController
 
         $users = $this->userRepository->findAll();
 
+        $lastMessagesInDialogArray = $this->dialogService->getLastMessagesInDialog($currentUser, $users);
         $unreadMessageStatusArray = $this->messageService->getUnreadMessagesStatusForUsers($currentUser, $users);
         $usersJson = json_encode($this->userService->getUsersListSerialized($users));
 
         return $this->render('messages/dialog.html.twig', [
+            'lastMessagesInDialogArray' => $lastMessagesInDialogArray,
             'unreadMessageStatusArray' => $unreadMessageStatusArray,
             'selectedUser' => $selectedUser,
             'selectedUserChangeStatusAt' => $selectedUserChangeStatusAt,
