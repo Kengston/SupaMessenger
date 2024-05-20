@@ -9,8 +9,9 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
-###< /public/uploads ###
+###< /public/ ###
 /public/uploads
+/public/avatars
 
 
 ###> phpunit/phpunit ###

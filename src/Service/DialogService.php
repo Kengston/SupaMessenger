@@ -70,4 +70,15 @@ class DialogService
 
         return $lastMessagesInDialog;
     }
+
+    public function deleteAllMessagesInDialog($selectedDialog)
+    {
+        foreach ($selectedDialog as $message) {
+            $message->setDeleted(true);
+
+            $this->entityManager->persist($message);
+        }
+
+        $this->entityManager->flush();
+    }
 }

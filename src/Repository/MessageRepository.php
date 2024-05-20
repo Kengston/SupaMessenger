@@ -49,7 +49,7 @@ class MessageRepository extends ServiceEntityRepository
 
         $query = $queryBuilder->select('m')
             ->from(Message::class, 'm')
-            ->where('(m.sender = :user1 AND m.recipient = :user2) OR (m.sender = :user2 AND m.recipient = :user1)')
+            ->where('(m.sender = :user1 AND m.recipient = :user2 AND m.deleted = false) OR (m.sender = :user2 AND m.recipient = :user1 AND m.deleted = false)')
             ->orderBy('m.createdAt', 'DESC')
             ->setParameter('user1', $user1)
             ->setParameter('user2', $user2)
