@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Message;
 use App\Form\MessageType;
 use App\Form\UserType;
+use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use App\Service\DialogService;
 use App\Service\MessageService;
@@ -127,6 +128,30 @@ class DialogController extends AbstractController
             'messageForm' => $messageForm->createView(),
             'id' => $id
         ]);
+    }
+
+    #[Route('/user/dialog/{id}/delete', name: 'app_delete_dialog')]
+    public function deleteDialog(int $id, PublisherInterface $publisher, DialogService $dialogService, MessageRepository $messageRepository)
+    {
+        $currentUser = $this->getUser();
+        $selectedUser = $this->userRepository->find($id);
+        $selectedDialog = $messageRepository->findDialogMessages($currentUser, $selectedUser);
+
+
+
+        if (!$selectedDialog) {
+            throw $this->createNotFoundException('Dialog not found');
+        }
+
+        $dialogService->deleteAllMessagesInDialog($selectedDialog);
+
+        $update = new Update(
+            '/dialog/user/'.$selectedUser->getId(),
+            json_encode(['delete' => 'dialog'])
+        );
+        $publisher($update);
+
+        return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
     }
 
     #[Route('/user/dialog/{id}/updates', name: 'fetch_dialog_updates')]
