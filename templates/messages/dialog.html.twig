@@ -177,6 +177,9 @@
 
 {% block javascripts %}
 
+    {{ encore_entry_script_tags('user-list') }}
+
+
     {% if selectedUser %}
 
         <script>
@@ -195,7 +198,8 @@
 
         {{ encore_entry_script_tags('message-list') }}
 
-        {{ encore_entry_script_tags('user-list') }}
-
     {% endif %}
+
+
+
 {% endblock %}
