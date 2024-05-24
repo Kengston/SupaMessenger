@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const el = document.querySelector('#user-list');
 
-    console.log(el);
-
     if (el !== null) {
 
         const props = {
