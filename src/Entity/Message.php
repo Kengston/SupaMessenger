@@ -31,6 +31,10 @@ class Message
     #[ORM\Column(type: "boolean", options: ["default" => false])]
     private ?bool $read = false;
 
+    #[ORM\OneToOne(targetEntity: Message::class)]
+    #[ORM\JoinColumn(name: "replyToMessage", referencedColumnName: "id")]
+    private ?Message $replyToMessage = null;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
@@ -112,6 +116,17 @@ class Message
     {
         $this->read = $read;
 
+        return $this;
+    }
+
+    public function getReplyToMessage(): ?Message
+    {
+        return $this->replyToMessage;
+    }
+
+    public function setReplyToMessage(?Message $replyToMessage): self
+    {
+        $this->replyToMessage = $replyToMessage;
         return $this;
     }
 
