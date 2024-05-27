@@ -32,6 +32,9 @@ class MessageService
 
     public function createAndPersist(User $sender, User $recipient, string $content, ?string $photoFilename): Message
     {
+
+
+
         $newMessage = $this->createMessage($sender, $recipient, $content, $photoFilename);
         $this->entityManager->persist($newMessage);
         $this->entityManager->flush();

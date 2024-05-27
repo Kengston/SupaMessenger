@@ -27,6 +27,62 @@ class MessageController extends AbstractController
         private MessageRepository $messageRepository
     ) {}
 
+    #[Route('user/dialog/message/new', name: 'app_new_message', methods: "POST")]
+    public function newMessage(Request $request, PublisherInterface $publisher, UserRepository $userRepository): JsonResponse
+    {
+
+        // Handle uploaded file with your MessageService
+        $uploadedFile = $request->files->get('photoData');
+        $photoFilename = null;
+        if ($uploadedFile) {
+            $photoFilename = $this->messageService->uploadPhoto($uploadedFile);
+        }
+
+        // Assume sender and recipient are accessible
+        $sender = $this->getUser();
+        $recipient = $userRepository->find($request->request->get('recipient'));
+
+        $newMessage = $this->messageService->createAndPersist($sender, $recipient,
+            $request->request->get('content'), $photoFilename);
+
+        if (!$newMessage) {
+            return new JsonResponse(['error' => 'Unable to create new message!'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
+        $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+
+        $senderUpdate = new Update(
+            '/dialog/user/'.$recipient->getId(),
+            json_encode([
+                'sender' => $sender->getUsername(),
+                'senderAvatar' => $sender->getAvatarFileName(),
+                'id' => $newMessage->getId(),
+                'content' => $newMessage->getContent(),
+                'updatedAt' => $updatedAt,
+                'createdAt' => $createdAt,
+                'photoData' => $photoFilename
+            ])
+        );
+        $recipientUpdate = new Update(
+            '/dialog/user/'.$sender->getId(),
+            json_encode([
+                'sender' => $sender->getUsername(),
+                'senderAvatar' => $sender->getAvatarFileName(),
+                'id' => $newMessage->getId(),
+                'content' => $newMessage->getContent(),
+                'updatedAt' => $updatedAt,
+                'createdAt' => $createdAt,
+                'photoData' => $photoFilename
+            ])
+        );
+
+        $publisher($senderUpdate);
+        $publisher($recipientUpdate);
+
+        return new JsonResponse(['success' => true, 'message' => $newMessage]);
+    }
+
     #[Route('user/dialog/message/delete/{messageId}', name: 'app_delete_message')]
     public function delete($messageId, PublisherInterface $publisher)
     {

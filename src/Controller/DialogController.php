@@ -33,7 +33,6 @@ class DialogController extends AbstractController
         $currentUser = $this->getUser();
 
         $avatarForm = $this->createForm(UserType::class, $currentUser);
-        $messageForm = $this->createForm(MessageType::class, new Message());
 
         $selectedUser = $id ? $this->userRepository->find($id) : null;
         $selectedUserChangeStatusAt = $selectedUser?->getChangeStatusAt();
@@ -41,7 +40,6 @@ class DialogController extends AbstractController
         $messages = $selectedUser ? $this->dialogService->getFormattedDialogMessages($currentUser, $selectedUser) : [];
 
         $avatarForm->handleRequest($request);
-        $messageForm->handleRequest($request);
 
         if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
             $avatarFile = $avatarForm->get('avatarFileName')->getData();
@@ -55,56 +53,6 @@ class DialogController extends AbstractController
             }
         }
 
-        if ($messageForm->isSubmitted() && $messageForm->isValid()) {
-
-            $uploadedFile = $messageForm->get('photoData')->getData();
-            $photoFilename = null;
-
-            if ($uploadedFile) {
-                try {
-                    $photoFilename = $this->messageService->uploadPhoto($uploadedFile);
-                } catch (\Throwable $e) {
-                    throw $this->createNotFoundException('Unable to upload the photo');
-                }
-            }
-
-            $newMessage = $this->messageService->createAndPersist($currentUser, $selectedUser, $messageForm->getData()->getContent(), $photoFilename);
-
-            if ($newMessage) {
-                $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
-                $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
-
-                $senderUpdate = new Update(
-                    '/dialog/user/'.$currentUser->getId(),
-                    json_encode([
-                        'sender' => $currentUser->getUsername(),
-                        'senderAvatar' => $currentUser->getAvatarFileName(),
-                        'id' => $newMessage->getId(),
-                        'content' => $newMessage->getContent(),
-                        'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt,
-                        'photoData' => $photoFilename
-                    ])
-                );
-                $recipientUpdate = new Update(
-                    '/dialog/user/'.$selectedUser->getId(),
-                    json_encode([
-                        'sender' => $currentUser->getUsername(),
-                        'senderAvatar' => $currentUser->getAvatarFileName(),
-                        'id' => $newMessage->getId(),
-                        'content' => $newMessage->getContent(),
-                        'updatedAt' => $updatedAt,
-                        'createdAt' => $createdAt,
-                        'photoData' => $photoFilename
-                    ])
-                );
-
-                $publisher($senderUpdate);
-                $publisher($recipientUpdate);
-            }
-
-            return $this->redirectToRoute('app_dialog', ['id' => $selectedUser->getId()]);
-        }
 
         if ($selectedUser) {
             $this->dialogService->markDialogAsRead($currentUser, $selectedUser);
@@ -125,7 +73,6 @@ class DialogController extends AbstractController
             'messages' => $messages,
             'users' => $usersJson,
             'avatarForm' => $avatarForm->createView(),
-            'messageForm' => $messageForm->createView(),
             'id' => $id
         ]);
     }
