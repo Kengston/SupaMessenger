@@ -22,10 +22,11 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('messageBubbleLogic', './assets/js/messageBubbleLogic.js')
-    .addEntry('messageFormLogic', './assets/js/messageFormLogic.js')
     .addEntry('userStatusLogic', './assets/js/userStatusLogic.js')
     .addEntry('message-list', './assets/js/message-list.js')
+    .addEntry('message-form', './assets/js/message-form.js')
     .addEntry('user-list', './assets/js/user-list.js')
+
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

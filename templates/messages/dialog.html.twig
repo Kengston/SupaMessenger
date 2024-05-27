@@ -122,7 +122,7 @@
 
         {% if selectedUser %}
 
-            {% set selectedUserData = { 'username': selectedUser.username, 'avatarFileName': selectedUser.avatarFileName} %}
+            {% set selectedUserData = {'id': selectedUser.id, 'username': selectedUser.username, 'avatarFileName': selectedUser.avatarFileName} %}
 
             <!-- Message List -->
             <div id="message-list" class="flex-1 overflow-auto p-5 space-y-5"
@@ -135,41 +135,9 @@
 
             <!-- Message Form -->
 
-            <form id="message-form" class="border-t p-5" action="" method="post" enctype="multipart/form-data">
-                {{ form_start(messageForm) }}
-                <div class="flex items-center justify-center">
-                    <!-- Emoji button -->
-                    <button id="dropdownMenuEmojiButton" data-dropdown-toggle="dropdownMenuEmoji" data-dropdown-placement="top" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" type="button">
-                        <i class="far fa-smile text-gray-600"></i>
-                    </button>
-
-                    <div id="dropdownMenuEmoji" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-64 overflow-auto">
-                        <div class="py-2 text-2xl grid grid-cols-5 gap-2 p-2">
-                            <!-- Emoji icon menu -->
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😀</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😃</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😄</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😁</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😆</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😅</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😂</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😎</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😍</button>
-                            <button class="emoji-btn focus:outline-none transform transition-transform duration-200 ease-in-out active:scale-110" type="button">😒</button>
-                        </div>
-                    </div>
-                    <!-- Image button -->
-                    <label for="message_photoData" class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none">
-                        {{ form_widget(messageForm.photoData, {'attr': {'style': 'display:none', 'id':'message_photoData'}}) }}
-                        <i class="far fa-image text-gray-600 fa-dynamic-icon"></i>
-                    </label>
-                    <!-- Input field (input) -->
-                    {{ form_widget(messageForm.content, {'attr': {'class': 'form-textarea flex-grow rounded-lg py-2 px-12 mx-2 resize-vertical'}}) }}
-                    <!-- Submit button -->
-                    <button type="submit" class="px-5 py-2 bg-blue-500 text-white rounded-lg"><i class="far fa-paper-plane"></i></button>
-                </div>
-                {{ form_end(messageForm) }}
-            </form>
+            <div id="message-form"
+                 data-selected-user="{{ selectedUserData|json_encode }}"
+            ></div>
         </div>
         {% endif %}
     </div>
@@ -192,11 +160,11 @@
 
         {{ encore_entry_script_tags('messageBubbleLogic') }}
 
-        {{ encore_entry_script_tags('messageFormLogic') }}
-
         {{ encore_entry_script_tags('userStatusLogic') }}
 
         {{ encore_entry_script_tags('message-list') }}
+
+        {{ encore_entry_script_tags('message-form') }}
 
     {% endif %}
 
