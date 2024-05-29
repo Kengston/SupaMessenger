@@ -30,13 +30,25 @@ class DialogService
 
                 $photoData = $message->getPhotoData();
 
+                $replyToMessage = $message->getReplyToMessage();
+                $replyToMessageFormatted = null;
+                if ($replyToMessage) {
+                    $replyToMessageFormatted = [
+                        'id' => $replyToMessage->getId(),
+                        'sender' => $replyToMessage->getSender()->getUsername(),
+                        'content' => $replyToMessage->getContent(),
+                    ];
+                }
+
                 $formattedMessages[] = [
                     'id' => $message->getId(),
                     'sender' => $message->getSender()->getUsername(),
                     'content' => $message->getContent(),
                     'createdAt' => $createdAtFormatted,
                     'updatedAt' => $updatedAtFormatted,
-                    'photoData' => $photoData
+                    'photoData' => $photoData,
+                    'replyToMessage' => $replyToMessageFormatted
+
                 ];
             }
         }

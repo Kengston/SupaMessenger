@@ -24,7 +24,6 @@ Encore
     .addEntry('messageBubbleLogic', './assets/js/messageBubbleLogic.js')
     .addEntry('userStatusLogic', './assets/js/userStatusLogic.js')
     .addEntry('message-list', './assets/js/message-list.js')
-    .addEntry('message-form', './assets/js/message-form.js')
     .addEntry('user-list', './assets/js/user-list.js')
 
 
