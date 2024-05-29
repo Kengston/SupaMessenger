@@ -9,10 +9,24 @@
            :alt="selectedUser.username + '\'s avatar'"
       />
       <div class="flex flex-col w-full max-w-[420px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
+
         <div class="flex items-center space-x-2 rtl:space-x-reverse">
           <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ message.sender }}</span>
           <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ message.createdAt }}</span>
         </div>
+
+        <div v-if="message.replyToMessage" class="px-5 py-2 bg-gray-100 text-gray-700 ">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <i class="fa-solid fa-reply mr-2 self-center"></i>
+              <div class="border-l border-gray-400 pl-2 pr-2">
+                <p class="font-semibold">Reply to {{ message.replyToMessage.sender }}:</p>
+                <p class="italic">"{{ message.replyToMessage.content }}"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <img v-if="message.photoData" :src="'/uploads/' + message.photoData" alt="Message Photo" class="max-w-xs mt-2" />
         <p class="text-lg font-light max-w-[420px] py-2.5 text-gray-900 dark:text-white">{{ message.content }}</p>
         <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
@@ -35,7 +49,7 @@
           class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700 dark:divide-gray-600">
         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
           <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</a>
+            <a @click.prevent="replyToMessage" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</a>
           </li>
           <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</a>
@@ -55,7 +69,8 @@
   export default {
     props: {
       message: Object,
-      selectedUser: Object
+      selectedUser: Object,
+      replyToMessage: Object
     },
     data() {
       return {
@@ -73,6 +88,9 @@
       toggleDropdown(messageId) {
         this.dropdowns[messageId].toggle();
       },
+      replyToMessage() {
+        this.$emit('reply', this.message);
+      }
     },
   }
 </script>

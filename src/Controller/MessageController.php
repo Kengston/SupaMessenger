@@ -42,8 +42,7 @@ class MessageController extends AbstractController
         $sender = $this->getUser();
         $recipient = $userRepository->find($request->request->get('recipient'));
 
-        $newMessage = $this->messageService->createAndPersist($sender, $recipient,
-            $request->request->get('content'), $photoFilename);
+        $newMessage = $this->messageService->createAndPersist($sender, $recipient, $request->request->get('content'), $photoFilename, $request->request->get('replyToMessageId'));
 
         if (!$newMessage) {
             return new JsonResponse(['error' => 'Unable to create new message!'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -51,6 +50,16 @@ class MessageController extends AbstractController
 
         $updatedAt = $newMessage->getUpdatedAt() ? $newMessage->getUpdatedAt()->format('H:i') : null;
         $createdAt = $newMessage->getCreatedAt() ? $newMessage->getCreatedAt()->format('H:i') : null;
+
+        $replyToMessage = $newMessage->getReplyToMessage();
+        $replyToMessageFormatted = null;
+        if ($replyToMessage) {
+            $replyToMessageFormatted = [
+                'id' => $replyToMessage->getId(),
+                'sender' => $replyToMessage->getSender()->getUsername(),
+                'content' => $replyToMessage->getContent(),
+            ];
+        }
 
         $senderUpdate = new Update(
             '/dialog/user/'.$recipient->getId(),
@@ -61,7 +70,8 @@ class MessageController extends AbstractController
                 'content' => $newMessage->getContent(),
                 'updatedAt' => $updatedAt,
                 'createdAt' => $createdAt,
-                'photoData' => $photoFilename
+                'photoData' => $photoFilename,
+                'replyToMessage' => $replyToMessageFormatted
             ])
         );
         $recipientUpdate = new Update(
@@ -73,7 +83,8 @@ class MessageController extends AbstractController
                 'content' => $newMessage->getContent(),
                 'updatedAt' => $updatedAt,
                 'createdAt' => $createdAt,
-                'photoData' => $photoFilename
+                'photoData' => $photoFilename,
+                'replyToMessage' => $replyToMessageFormatted
             ])
         );
 

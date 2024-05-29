@@ -132,12 +132,6 @@
                  data-mercure-url="http://127.0.0.1:3001/.well-known/mercure?topic=/dialog/user/{{ currentUser.id }}"
                 >
             </div>
-
-            <!-- Message Form -->
-
-            <div id="message-form"
-                 data-selected-user="{{ selectedUserData|json_encode }}"
-            ></div>
         </div>
         {% endif %}
     </div>
@@ -150,21 +144,11 @@
 
     {% if selectedUser %}
 
-        <script>
-            window.onload = function() {
-                const messageList = document.getElementById('message-list');
-                messageList.scrollTop = messageList.scrollHeight;
-            };
-
-        </script>
-
         {{ encore_entry_script_tags('messageBubbleLogic') }}
 
         {{ encore_entry_script_tags('userStatusLogic') }}
 
         {{ encore_entry_script_tags('message-list') }}
-
-        {{ encore_entry_script_tags('message-form') }}
 
     {% endif %}
 

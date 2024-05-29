@@ -18,7 +18,7 @@ class MessageService
     ) {
     }
 
-    private function createMessage(User $sender, User $recipient, string $content, ?string $photoFilename): Message
+    private function createMessage(User $sender, User $recipient, string $content, ?string $photoFilename, ?Message $replyToMessage): Message
     {
         $message = new Message();
         $message->setSender($sender);
@@ -26,16 +26,20 @@ class MessageService
         $message->setContent($content);
         $message->setCreatedAt(new \DateTimeImmutable());
         $message->setPhotoData($photoFilename);
+        $message->setReplyToMessage($replyToMessage);
 
         return $message;
     }
 
-    public function createAndPersist(User $sender, User $recipient, string $content, ?string $photoFilename): Message
+    public function createAndPersist(User $sender, User $recipient, string $content, ?string $photoFilename, ?int $replyToMessageId = null): Message
     {
+        $replyToMessage = null;
 
+        if ($replyToMessageId) {
+            $replyToMessage = $this->entityManager->getRepository(Message::class)->find($replyToMessageId);
+        }
 
-
-        $newMessage = $this->createMessage($sender, $recipient, $content, $photoFilename);
+        $newMessage = $this->createMessage($sender, $recipient, $content, $photoFilename, $replyToMessage);
         $this->entityManager->persist($newMessage);
         $this->entityManager->flush();
 
