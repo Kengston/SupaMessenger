@@ -29,7 +29,7 @@
 
         <img v-if="message.photoData" :src="'/uploads/' + message.photoData" alt="Message Photo" class="max-w-xs mt-2" />
 
-        <div v-if="!editMode" class="message-content text-lg max-w-[420px] font-light py-2.5 text-gray-900 dark:text-white">{{ message.content }}</div>
+        <div v-if="!editMode" class="message-content text-lg font-light py-2.5 text-gray-900 dark:text-white break-words overflow-auto">{{ message.content }}</div>
 
 
         <!-- Edit mode -->

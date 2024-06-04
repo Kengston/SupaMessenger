@@ -17,8 +17,7 @@
           />
         </h1>
         <p class="text-sm text-gray-500">
-          {{ lastMessagesInDialogArray.hasOwnProperty(userData.id)
-            ? lastMessagesInDialogArray[userData.id] : 'No recent message!' }}
+          {{ showLastMessage(userData.id) }}
         </p>
       </div>
     </a>
@@ -32,6 +31,17 @@ export default {
     getUserAvatar(user) {
       return '/avatars/' + (user.avatarFileName || 'user-tie-solid.svg')
     },
+    showLastMessage(userId) {
+      if (this.lastMessagesInDialogArray.hasOwnProperty(userId)) {
+        if (this.lastMessagesInDialogArray[userId].length > 30) {
+          return this.lastMessagesInDialogArray[userId].slice(0, 30) + '...'
+        } else {
+          return this.lastMessagesInDialogArray[userId]
+        }
+      } else {
+        return 'No recent message!'
+      }
+    }
   },
 }
 </script>

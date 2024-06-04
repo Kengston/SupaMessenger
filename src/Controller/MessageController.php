@@ -2,23 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Message;
-use App\Entity\User;
 use App\Form\MessageType;
-use App\Form\UserType;
 use App\Repository\MessageRepository;
 use App\Service\MessageService;
 use App\Repository\UserRepository;
-use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
-use function PHPUnit\Framework\throwException;
 
 class MessageController extends AbstractController
 {

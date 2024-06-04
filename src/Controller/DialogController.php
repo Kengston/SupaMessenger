@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Message;
 use App\Form\MessageType;
 use App\Form\UserType;
 use App\Repository\MessageRepository;
