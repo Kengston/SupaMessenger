@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Message;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
