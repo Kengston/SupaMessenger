@@ -71,7 +71,7 @@
             <a @click.prevent="replyToMessage" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</a>
           </li>
           <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</a>
+            <button @click="forwardMessage()" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</button>
           </li>
           <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
@@ -91,10 +91,13 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import { Dropdown } from 'flowbite';
+import ForwardMessageModal from './ForwardMessageModal.vue';
+import { EventBus } from "../EventBus";
 
 export default {
   props: {
@@ -102,9 +105,13 @@ export default {
     currentUser: Object,
     replyToMessage: Object
   },
+  components: {
+    ForwardMessageModal
+  },
   data() {
     return {
       editMode: false,
+      forwardMessage: false,
       editInputContent: "",
       dropdowns: {}, // Storing all instances in `dropdowns` object.
     };
@@ -117,6 +124,10 @@ export default {
   },
 
   methods: {
+    forwardMessage() {
+      console.log('Emitting event');
+      EventBus.emit('show-forward-modal', this.message);
+    },
     toggleDropdown(messageId) {
       this.dropdowns[messageId].toggle();
     },
