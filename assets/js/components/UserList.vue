@@ -32,20 +32,34 @@
         :lastMessagesInDialogArray="lastMessagesInDialogArray"
     />
   </ul>
+
+  <ForwardMessageModal :showModal="showForwardMessageModal" :message="forwardMessage" :users="users"/>
 </template>
 
 <script>
 import axios from "axios";
 import UserItem from "./UserItem.vue";
+import ForwardMessageModal from "./ForwardMessageModal.vue";
+import {EventBus} from "../EventBus";
 export default {
-  components: {UserItem},
+  components: {ForwardMessageModal, UserItem},
   data() {
     return {
       searchInput: "",
-      searchResults: []
+      searchResults: [],
+      showForwardMessageModal: false,
+      forwardMessage: null,
     };
   },
   props: ['users', 'currentUser', 'unreadMessageStatusArray', 'lastMessagesInDialogArray'],
+  created() {
+    // Listen to the event
+    EventBus.on('show-forward-modal', (message) => {
+      console.log('Event received');
+      this.forwardMessage = message;
+      this.showForwardMessageModal = true;
+    });
+  },
   computed: {
     filteredUsers() {
       return this.users.filter(user =>
@@ -54,6 +68,7 @@ export default {
       );
     }
   },
+
   methods: {
     searchUsers() {
       if (!this.searchInput) {
