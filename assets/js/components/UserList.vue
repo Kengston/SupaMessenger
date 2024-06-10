@@ -37,6 +37,7 @@
       :showModal="showForwardMessageModal"
       :message="forwardMessage"
       :users="users"
+      :lastMessagesInDialogArray="lastMessagesInDialogArray"
       v-on:closeModal="showForwardMessageModal = false"
   />
 </template>
