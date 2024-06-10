@@ -33,7 +33,12 @@
     />
   </ul>
 
-  <ForwardMessageModal :showModal="showForwardMessageModal" :message="forwardMessage" :users="users"/>
+  <ForwardMessageModal
+      :showModal="showForwardMessageModal"
+      :message="forwardMessage"
+      :users="users"
+      v-on:closeModal="showForwardMessageModal = false"
+  />
 </template>
 
 <script>
@@ -59,6 +64,9 @@ export default {
       this.forwardMessage = message;
       this.showForwardMessageModal = true;
     });
+  },
+  destroyed() {
+    EventBus.off('show-forward-modal');
   },
   computed: {
     filteredUsers() {

@@ -70,8 +70,8 @@
           <li>
             <a @click.prevent="replyToMessage" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</a>
           </li>
-          <li>
-            <button @click="forwardMessage()" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</button>
+          <li class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+            <button @click="forwardMessage()" class="block">Forward</button>
           </li>
           <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
@@ -82,8 +82,7 @@
           <li>
             <a
                 :href="'message/delete/' + message.id"
-                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-            >
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
               Delete
             </a>
           </li>
@@ -96,7 +95,6 @@
 
 <script>
 import { Dropdown } from 'flowbite';
-import ForwardMessageModal from './ForwardMessageModal.vue';
 import { EventBus } from "../EventBus";
 
 export default {
@@ -104,9 +102,6 @@ export default {
     message: Object,
     currentUser: Object,
     replyToMessage: Object
-  },
-  components: {
-    ForwardMessageModal
   },
   data() {
     return {

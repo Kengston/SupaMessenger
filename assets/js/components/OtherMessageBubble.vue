@@ -51,8 +51,8 @@
           <li>
             <a @click.prevent="replyToMessage" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reply</a>
           </li>
-          <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Forward</a>
+          <li class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+            <button @click="forwardMessage()" class="block">Forward</button>
           </li>
           <li>
             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
@@ -65,6 +65,7 @@
 
 <script>
   import {Dropdown} from "flowbite";
+  import { EventBus } from "../EventBus";
 
   export default {
     props: {
@@ -74,6 +75,7 @@
     },
     data() {
       return {
+        forwardMessage: false,
         dropdowns: {}, // Storing all instances in `dropdowns` object.
       };
     },
@@ -85,6 +87,10 @@
       );
     },
     methods: {
+      forwardMessage() {
+        console.log('Emitting event');
+        EventBus.emit('show-forward-modal', this.message);
+      },
       toggleDropdown(messageId) {
         this.dropdowns[messageId].toggle();
       },
