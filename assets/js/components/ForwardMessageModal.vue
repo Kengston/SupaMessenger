@@ -17,7 +17,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </span>
-        <input v-model="searchInput" @input="searchUsers" type="search" placeholder="Search Users" class="pl-10 outline-none rounded px-6 py-3 w-full text-sm focus:border-blue-500 border border-l-0 border-gray-200 required" />
+        <input v-model="searchInput" @input="searchUsers" type="search" placeholder="Search Users"
+               class="pl-10 outline-none rounded px-6 py-3 w-full text-sm focus:border-blue-500 border border-l-0 border-gray-200 required" />
       </div>
 
       <div class="px-6 mb-4 border-b"></div>
@@ -49,6 +50,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   props: ['showModal', 'message', 'users', 'lastMessagesInDialogArray'],
   data() {
@@ -83,12 +86,30 @@ export default {
     closeModal() {
       this.$emit('closeModal');
     },
-    forwardMessage(user) {
-      console.log(`Message "${this.message}" forwarded to user:`, user);
-      // Add your logic here to perform the forward action
-      this.showModal = false; // Close the modal after forwarding the message
-      // After successful action you may close the modal
-      this.closeModal();
+    async forwardMessage(user) {
+      let formData = new FormData();
+      formData.append('content', this.message.content);
+      formData.append('recipient', user.id);
+      formData.append('forwardedFrom', this.message.sender);
+
+      if (this.message.photoData) {
+        formData.append('photoData', this.message.photoData);
+      }
+
+      if (this.message.replyToMessage) {
+        formData.append('replyToMessageId', this.message.replyToMessage);
+      }
+
+      try {
+        const response = await axios.post('/user/dialog/message/forward', formData);
+        if (response.data.success) {
+          console.log(this.message);
+        } else {
+          console.error(response.data.error);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
     getUserAvatar(user) {
       return '/avatars/' + (user.avatarFileName || 'user-tie-solid.svg')

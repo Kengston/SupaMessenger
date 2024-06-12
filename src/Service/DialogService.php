@@ -46,8 +46,8 @@ class DialogService
                     'createdAt' => $createdAtFormatted,
                     'updatedAt' => $updatedAtFormatted,
                     'photoData' => $photoData,
-                    'replyToMessage' => $replyToMessageFormatted
-
+                    'replyToMessage' => $replyToMessageFormatted,
+                    'forwardedFrom' => $message->getForwardedFrom()
                 ];
             }
         }

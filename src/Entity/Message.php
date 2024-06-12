@@ -43,6 +43,9 @@ class Message
     #[ORM\JoinColumn(nullable: false)]
     private ?User $recipient = null;
 
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $forwardedFrom = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -150,6 +153,18 @@ class Message
     public function setRecipient(?User $recipient): self
     {
         $this->recipient = $recipient;
+
+        return $this;
+    }
+
+    public function getForwardedFrom(): ?string
+    {
+        return $this->forwardedFrom;
+    }
+
+    public function setForwardedFrom(?string $forwardedFrom): self
+    {
+        $this->forwardedFrom = $forwardedFrom;
 
         return $this;
     }

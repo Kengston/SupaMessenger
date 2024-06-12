@@ -21,6 +21,31 @@ class MessageController extends AbstractController
         private MessageRepository $messageRepository
     ) {}
 
+    #[Route('user/dialog/message/forward', name: 'app_message_forward', methods: "POST")]
+    public function forwardMessage(Request $request, UserRepository $userRepository)
+    {
+        $uploadedFile = $request->files->get('photoData');
+        $photoFilename = null;
+        if ($uploadedFile) {
+            $photoFilename = $this->messageService->uploadPhoto($uploadedFile);
+        }
+
+        $sender = $this->getUser();
+        $recipient = $userRepository->find($request->request->get('recipient'));
+
+        $forwardedFrom = $request->request->get('forwardedFrom');
+
+        $content = $request->request->get('content');
+
+        $newMessage = $this->messageService->createAndPersist($sender, $recipient, $content, $photoFilename, $request->request->get('replyToMessageId'), $forwardedFrom);
+
+        if (!$newMessage) {
+            return new JsonResponse(['error' => 'Unable to create new message!'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(['success' => true, 'message' => $newMessage]);
+    }
+
     #[Route('user/dialog/message/new', name: 'app_new_message', methods: "POST")]
     public function newMessage(Request $request, PublisherInterface $publisher, UserRepository $userRepository): JsonResponse
     {
@@ -36,7 +61,9 @@ class MessageController extends AbstractController
         $sender = $this->getUser();
         $recipient = $userRepository->find($request->request->get('recipient'));
 
-        $newMessage = $this->messageService->createAndPersist($sender, $recipient, $request->request->get('content'), $photoFilename, $request->request->get('replyToMessageId'));
+        $content = $request->request->get('content');
+
+        $newMessage = $this->messageService->createAndPersist($sender, $recipient, $content, $photoFilename, $request->request->get('replyToMessageId'));
 
         if (!$newMessage) {
             return new JsonResponse(['error' => 'Unable to create new message!'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -65,7 +92,7 @@ class MessageController extends AbstractController
                 'updatedAt' => $updatedAt,
                 'createdAt' => $createdAt,
                 'photoData' => $photoFilename,
-                'replyToMessage' => $replyToMessageFormatted
+                'replyToMessage' => $replyToMessageFormatted,
             ])
         );
         $recipientUpdate = new Update(
