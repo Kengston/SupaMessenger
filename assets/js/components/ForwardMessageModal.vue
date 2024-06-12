@@ -51,6 +51,7 @@
 
 <script>
 import axios from "axios";
+import { EventBus } from "../EventBus";
 
 export default {
   props: ['showModal', 'message', 'users', 'lastMessagesInDialogArray'],
@@ -103,7 +104,8 @@ export default {
       try {
         const response = await axios.post('/user/dialog/message/forward', formData);
         if (response.data.success) {
-          console.log(this.message);
+          EventBus.emit('show-flash', response.data.message)
+          this.closeModal();
         } else {
           console.error(response.data.error);
         }
