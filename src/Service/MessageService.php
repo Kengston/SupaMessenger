@@ -41,6 +41,7 @@ class MessageService
         }
 
         $newMessage = $this->createMessage($sender, $recipient, $content, $photoFilename, $replyToMessage, $forwardedFrom);
+
         $this->entityManager->persist($newMessage);
         $this->entityManager->flush();
 

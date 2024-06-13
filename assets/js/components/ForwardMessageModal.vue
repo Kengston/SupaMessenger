@@ -88,18 +88,15 @@ export default {
       this.$emit('closeModal');
     },
     async forwardMessage(user) {
+
       let formData = new FormData();
       formData.append('content', this.message.content);
       formData.append('recipient', user.id);
       formData.append('forwardedFrom', this.message.sender);
+      formData.append('photoData', this.message.photoData);
 
-      if (this.message.photoData) {
-        formData.append('photoData', this.message.photoData);
-      }
 
-      if (this.message.replyToMessage) {
-        formData.append('replyToMessageId', this.message.replyToMessage);
-      }
+      console.log(this.message);
 
       try {
         const response = await axios.post('/user/dialog/message/forward', formData);
