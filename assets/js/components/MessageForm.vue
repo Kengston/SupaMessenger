@@ -18,22 +18,24 @@
       </div>
     </div>
     <form class="border-t pl-5 pr-5" @submit.prevent="submit">
-      <div class="flex items-center justify-center">
+      <div class="relative flex items-center justify-center">
 
           <!-- Emoji button -->
-        <button class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none"
-                type="button" @click="emojiPanel = !emojiPanel">
-          <i class="far fa-smile text-gray-600"></i>
-        </button>
+        <div class="relative">
+        <!-- Emoji button -->
+          <button class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" type="button" @click="emojiPanel = !emojiPanel">
+            <i class="far fa-smile text-gray-600"></i>
+          </button>
 
-        <!-- Emoji panel -->
-        <div v-if="emojiPanel" class="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-64 overflow-auto">
-          <div class="py-2 text-2xl grid grid-cols-5 gap-2 p-2">
-            <button v-for="(emoji, index) in emojis"
-                    :key="index" class="emoji-btn focus:outline-none transform transition-transform
+          <!-- Emoji panel -->
+          <div v-if="emojiPanel" class="absolute  bottom-full mb-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-64 max-h-64 overflow-y-auto">
+            <div class="py-2 text-2xl grid grid-cols-5 gap-2 p-2">
+              <button v-for="(emoji, index) in emojis"
+                      :key="index" class="emoji-btn focus:outline-none transform transition-transform
                     duration-200 ease-in-out active:scale-110" type="button" @click="addEmojiToMessage(emoji)">
-              {{ emoji }}
-            </button>
+                {{ emoji }}
+              </button>
+            </div>
           </div>
         </div>
 
