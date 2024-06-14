@@ -26,7 +26,7 @@
           <button class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" type="button" @click="emojiPanel = !emojiPanel">
             <i class="far fa-smile text-gray-600"></i>
           </button>
-
+          
           <!-- Emoji panel -->
           <div v-if="emojiPanel" class="absolute  bottom-full mb-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-64 max-h-64 overflow-y-auto">
             <div class="py-2 text-2xl grid grid-cols-5 gap-2 p-2">
