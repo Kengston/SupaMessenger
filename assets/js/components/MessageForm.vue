@@ -42,7 +42,11 @@
         <!-- Image button -->
         <label class="flex items-center px-3 bg-gray-200 rounded-lg focus:outline-none" @change="uploadImage">
           <input type="file" id="message_photoData" ref="fileInput" @change="uploadImage" class="w-0 h-0 opacity-0 overflow-hidden absolute">
-          <i class="far fa-image text-gray-600 fa-dynamic-icon"></i>
+          <i
+              class="far fa-image text-gray-600 fa-dynamic-icon"
+              :class="{ 'fas fa-times': file }"
+              @click.stop="file && cancelFileUpload()">
+          </i>
         </label>
 
         <!-- Input field (input) -->
@@ -110,6 +114,10 @@ export default {
     },
     cancelReply() {
       this.$emit('cancel-reply');
+    },
+    cancelFileUpload() {
+      this.file = null;
+      this.$refs.fileInput.value = '';
     }
   }
 }
