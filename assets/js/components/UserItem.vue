@@ -32,7 +32,7 @@ export default {
       return '/avatars/' + (user.avatarFileName || 'user-tie-solid.svg')
     },
     showLastMessage(userId) {
-      if (this.lastMessagesInDialogArray.hasOwnProperty(userId)) {
+      if (this.lastMessagesInDialogArray.hasOwnProperty(userId) && this.lastMessagesInDialogArray[userId]) {
         if (this.lastMessagesInDialogArray[userId].length > 30) {
           return this.lastMessagesInDialogArray[userId].slice(0, 30) + '...'
         } else {

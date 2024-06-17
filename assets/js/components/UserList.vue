@@ -80,6 +80,8 @@ export default {
 
   methods: {
     searchUsers() {
+
+      console.log(this.users);
       if (!this.searchInput) {
         this.searchResults = [];
         return;
@@ -89,6 +91,7 @@ export default {
       this.searchResults = this.users.filter(user =>
           user.username.toLowerCase().includes(this.searchInput.toLowerCase())
       );
+      console.log(this.searchResults)
     },
     selectUser(user) {
       // currently this method does nothing
