@@ -133,6 +133,7 @@ export default {
     },
     getUserAvatar(user)
     {
+      
       return '/avatars/' + (user.avatarFileName || 'user-tie-solid.svg')
     }
   }
