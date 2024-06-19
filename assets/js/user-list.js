@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
             users: JSON.parse(el.dataset.users),
             currentUser: JSON.parse(el.dataset.currentUser),
             unreadMessageStatusArray: JSON.parse(el.dataset.unreadMessageStatusArray),
-            lastMessagesInDialogArray: JSON.parse(el.dataset.lastMessagesInDialogArray)
+            lastMessagesInDialogArray: JSON.parse(el.dataset.lastMessagesInDialogArray),
+            mercureUrl: el.dataset.mercureUrl
         };
 
         createApp(UserList, props).mount(el);

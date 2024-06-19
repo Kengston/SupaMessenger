@@ -55,6 +55,7 @@ export default {
     EventBus.on('show-flash', this.showFlash);
 
     this.scrollToBottom();
+
     const eventSource = new EventSource(this.mercureUrl);
     eventSource.onmessage = event => {
       const data = JSON.parse(event.data);

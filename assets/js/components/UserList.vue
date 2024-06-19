@@ -13,10 +13,10 @@
     <div v-if="searchResults.length > 0">
       <ul class="bg-white w-3/12 mx-auto block border border-gray-100 rounded shadow-lg z-50 absolute">
         <UserItem
-            v-for="result in searchResults"
-            :key="result.id"
-            :userData="result"
-            :unreadMessageStatusArray="unreadMessageStatusArray"
+            v-for="user in filteredUsers"
+            :key="user.id"
+            :userData="user"
+            :unreadMessageStatusArray="localUnreadMessageStatusArray"
             :lastMessagesInDialogArray="lastMessagesInDialogArray"
         />
       </ul>
@@ -28,25 +28,27 @@
         v-for="user in filteredUsers"
         :key="user.id"
         :userData="user"
-        :unreadMessageStatusArray="unreadMessageStatusArray"
+        :unreadMessageStatusArray="localUnreadMessageStatusArray"
         :lastMessagesInDialogArray="lastMessagesInDialogArray"
     />
   </ul>
 
+
   <ForwardMessageModal
       :showModal="showForwardMessageModal"
       :message="forwardMessage"
-      :users="users"
+      :users="localUsers"
       :lastMessagesInDialogArray="lastMessagesInDialogArray"
       v-on:closeModal="showForwardMessageModal = false"
   />
 </template>
 
 <script>
-import axios from "axios";
 import UserItem from "./UserItem.vue";
 import ForwardMessageModal from "./ForwardMessageModal.vue";
 import {EventBus} from "../EventBus";
+import axios from 'axios';
+
 export default {
   components: {ForwardMessageModal, UserItem},
   data() {
@@ -55,23 +57,44 @@ export default {
       searchResults: [],
       showForwardMessageModal: false,
       forwardMessage: null,
+      localUsers: this.users,
+      localUnreadMessageStatusArray: this.unreadMessageStatusArray,
+      localLastMessagesInDialogArray: this.lastMessagesInDialogArray
     };
   },
-  props: ['users', 'currentUser', 'unreadMessageStatusArray', 'lastMessagesInDialogArray'],
+  props: ['users', 'currentUser', 'unreadMessageStatusArray', 'lastMessagesInDialogArray', 'mercureUrl'],
   created() {
     // Listen to the event
     EventBus.on('show-forward-modal', (message) => {
-      console.log('Event received');
       this.forwardMessage = message;
       this.showForwardMessageModal = true;
     });
+  },
+  mounted() {
+    const url = new URL(this.mercureUrl);
+
+    url.searchParams.append('topic', '/userlist/update');
+
+    this.eventSourse = new EventSource(url);
+
+    this.eventSourse.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.senderId === this.currentUser.id || data.recipientId === this.currentUser.id) {
+        this.updateUserList();
+      }
+    };
+  },
+  beforeUnmount() {
+    if (this.eventSourse) {
+      this.eventSourse.close();
+    }
   },
   destroyed() {
     EventBus.off('show-forward-modal');
   },
   computed: {
     filteredUsers() {
-      return this.users.filter(user =>
+      return this.localUsers.filter(user =>
           this.lastMessagesInDialogArray.hasOwnProperty(user.id) &&
           this.lastMessagesInDialogArray[user.id]
       );
@@ -79,19 +102,31 @@ export default {
   },
 
   methods: {
-    searchUsers() {
+    async updateUserList() {
+      try {
+        const response = await axios.get('/user/userList/update');
+        this.localUsers = response.data;
+        this.localUsers = response.data.userList;
+        this.localUnreadMessageStatusArray = response.data.unreadMessageStatusArray;
+        this.lastMessagesInDialogArray = response.data.lastMessagesInDialogArray;
 
-      console.log(this.users);
+        console.log(this.lastMessagesInDialogArray)
+      } catch (error) {
+        console.error('Could not update user list:', error);
+      }
+    },
+    searchUsers() {
+      console.log(this.localLastMessagesInDialogArray);
+      console.log(this.localLastMessagesInDialogArray);
       if (!this.searchInput) {
         this.searchResults = [];
         return;
       }
 
       // client side filtering
-      this.searchResults = this.users.filter(user =>
+      this.searchResults = this.localUsers.filter(user =>
           user.username.toLowerCase().includes(this.searchInput.toLowerCase())
       );
-      console.log(this.searchResults)
     },
     selectUser(user) {
       // currently this method does nothing

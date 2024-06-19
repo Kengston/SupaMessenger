@@ -81,6 +81,8 @@ class MessageController extends AbstractController
             json_encode([
                 'sender' => $sender->getUsername(),
                 'senderAvatar' => $sender->getAvatarFileName(),
+                'senderId' => $sender->getId(),
+                'recipientId' => $recipient->getId(),
                 'id' => $newMessage->getId(),
                 'content' => $newMessage->getContent(),
                 'updatedAt' => $updatedAt,
@@ -94,6 +96,8 @@ class MessageController extends AbstractController
             json_encode([
                 'sender' => $sender->getUsername(),
                 'senderAvatar' => $sender->getAvatarFileName(),
+                'senderId' => $sender->getId(),
+                'recipientId' => $recipient->getId(),
                 'id' => $newMessage->getId(),
                 'content' => $newMessage->getContent(),
                 'updatedAt' => $updatedAt,
@@ -105,6 +109,15 @@ class MessageController extends AbstractController
 
         $publisher($senderUpdate);
         $publisher($recipientUpdate);
+
+        $updateUserList = new Update('/userlist/update',
+            json_encode([
+                'senderId' => $sender->getId(),
+                'recipientId' => $recipient->getId(),
+            ])
+        );
+
+        $publisher($updateUserList);
 
         return new JsonResponse(['success' => true, 'message' => $newMessage]);
     }
