@@ -117,6 +117,7 @@ export default {
     },
     searchUsers() {
       console.log(this.localLastMessagesInDialogArray);
+      
       console.log(this.localLastMessagesInDialogArray);
       if (!this.searchInput) {
         this.searchResults = [];
