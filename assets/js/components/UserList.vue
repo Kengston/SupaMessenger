@@ -17,7 +17,7 @@
             :key="user.id"
             :userData="user"
             :unreadMessageStatusArray="localUnreadMessageStatusArray"
-            :lastMessagesInDialogArray="lastMessagesInDialogArray"
+            :lastMessagesInDialogArray="localLastMessagesInDialogArray"
         />
       </ul>
     </div>
@@ -29,7 +29,7 @@
         :key="user.id"
         :userData="user"
         :unreadMessageStatusArray="localUnreadMessageStatusArray"
-        :lastMessagesInDialogArray="lastMessagesInDialogArray"
+        :lastMessagesInDialogArray="localLastMessagesInDialogArray"
     />
   </ul>
 
@@ -38,7 +38,7 @@
       :showModal="showForwardMessageModal"
       :message="forwardMessage"
       :users="localUsers"
-      :lastMessagesInDialogArray="lastMessagesInDialogArray"
+      :lastMessagesInDialogArray="localLastMessagesInDialogArray"
       v-on:closeModal="showForwardMessageModal = false"
   />
 </template>
@@ -95,8 +95,8 @@ export default {
   computed: {
     filteredUsers() {
       return this.localUsers.filter(user =>
-          this.lastMessagesInDialogArray.hasOwnProperty(user.id) &&
-          this.lastMessagesInDialogArray[user.id]
+          this.localLastMessagesInDialogArray.hasOwnProperty(user.id) &&
+          this.localLastMessagesInDialogArray[user.id]
       );
     }
   },
@@ -108,17 +108,14 @@ export default {
         this.localUsers = response.data;
         this.localUsers = response.data.userList;
         this.localUnreadMessageStatusArray = response.data.unreadMessageStatusArray;
-        this.lastMessagesInDialogArray = response.data.lastMessagesInDialogArray;
+        this.localLastMessagesInDialogArray = response.data.lastMessagesInDialogArray;
 
-        console.log(this.lastMessagesInDialogArray)
+        console.log(this.localLastMessagesInDialogArray)
       } catch (error) {
         console.error('Could not update user list:', error);
       }
     },
     searchUsers() {
-      console.log(this.localLastMessagesInDialogArray);
-      
-      console.log(this.localLastMessagesInDialogArray);
       if (!this.searchInput) {
         this.searchResults = [];
         return;
@@ -136,6 +133,7 @@ export default {
     },
     getUserAvatar(user)
     {
+      
       return '/avatars/' + (user.avatarFileName || 'user-tie-solid.svg')
     }
   }

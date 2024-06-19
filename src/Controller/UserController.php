@@ -63,7 +63,7 @@ class UserController extends AbstractController
         return $this->json([
             'userList' => $userList,
             'unreadMessageStatusArray' => $unreadMesssageStatusArray,
-            'lastMessageInDialogArray' => $lastMessagesInDialogArray
+            'lastMessagesInDialogArray' => $lastMessagesInDialogArray
         ]);
     }
 }
