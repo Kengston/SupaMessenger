@@ -25,6 +25,7 @@
              data-current-user="{{ currentUserData | json_encode }}"
              data-unread-message-status-array="{{ unreadMessageStatusArray | json_encode }}"
              data-last-messages-in-dialog-array="{{ lastMessagesInDialogArray | json_encode }}"
+             data-last-message-time-in-dialog-array="{{ lastMessageTimeInDialog | json_encode }}"
              data-mercure-url="http://127.0.0.1:3001/.well-known/mercure?topic=/dialog/user/{{ currentUser.id }}">
         </div>
         <!-- Main Content -->
