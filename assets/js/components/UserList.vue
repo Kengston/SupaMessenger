@@ -59,10 +59,11 @@ export default {
       forwardMessage: null,
       localUsers: this.users,
       localUnreadMessageStatusArray: this.unreadMessageStatusArray,
-      localLastMessagesInDialogArray: this.lastMessagesInDialogArray
+      localLastMessagesInDialogArray: this.lastMessagesInDialogArray,
+      localLastMessageTimeInDialogArray: this.lastMessageTimeInDialogArray
     };
   },
-  props: ['users', 'currentUser', 'unreadMessageStatusArray', 'lastMessagesInDialogArray', 'mercureUrl'],
+  props: ['users', 'currentUser', 'unreadMessageStatusArray', 'lastMessagesInDialogArray', 'lastMessageTimeInDialogArray', 'mercureUrl'],
   created() {
     // Listen to the event
     EventBus.on('show-forward-modal', (message) => {
@@ -94,27 +95,34 @@ export default {
   },
   computed: {
     filteredUsers() {
-      return this.localUsers.filter(user =>
-          this.localLastMessagesInDialogArray.hasOwnProperty(user.id) &&
-          this.localLastMessagesInDialogArray[user.id]
-      );
+      return this.localUsers.slice().sort((a, b) => {
+        const timeA = this.localLastMessageTimeInDialogArray[a.id]?.date;
+        const timeB = this.localLastMessageTimeInDialogArray[b.id]?.date;
+
+        if (!timeB)
+          return -1;
+        if (!timeA)
+          return 1;
+
+        return new Date(timeB) - new Date(timeA);
+      }).filter(user => this.localLastMessagesInDialogArray[user.id]);
     }
   },
-
   methods: {
     async updateUserList() {
       try {
         const response = await axios.get('/user/userList/update');
-        this.localUsers = response.data;
-        this.localUsers = response.data.userList;
+
         this.localUnreadMessageStatusArray = response.data.unreadMessageStatusArray;
         this.localLastMessagesInDialogArray = response.data.lastMessagesInDialogArray;
-
+        this.localLastMessageTimeInDialogArray = response.data.lastMessageTimeInDialogArray;
+        this.localUsers = response.data.userList;
       } catch (error) {
         console.error('Could not update user list:', error);
       }
     },
     searchUsers() {
+
       if (!this.searchInput) {
         this.searchResults = [];
         return;

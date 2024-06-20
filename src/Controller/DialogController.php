@@ -61,11 +61,14 @@ class DialogController extends AbstractController
 
         $lastMessagesInDialogArray = $this->dialogService->getLastMessagesInDialog($currentUser, $users);
         $unreadMessageStatusArray = $this->messageService->getUnreadMessagesStatusForUsers($currentUser, $users);
+        $lastMessageTimeInDialog = $this->dialogService->getLastMessageTimeInDialogArray($currentUser, $users);
+
         $usersJson = json_encode($this->userService->getUsersListSerialized($users));
 
         return $this->render('messages/dialog.html.twig', [
             'lastMessagesInDialogArray' => $lastMessagesInDialogArray,
             'unreadMessageStatusArray' => $unreadMessageStatusArray,
+            'lastMessageTimeInDialog' => $lastMessageTimeInDialog,
             'selectedUser' => $selectedUser,
             'selectedUserChangeStatusAt' => $selectedUserChangeStatusAt,
             'currentUser' => $currentUser,

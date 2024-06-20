@@ -8,11 +8,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (el !== null) {
 
+
         const props = {
             users: JSON.parse(el.dataset.users),
             currentUser: JSON.parse(el.dataset.currentUser),
             unreadMessageStatusArray: JSON.parse(el.dataset.unreadMessageStatusArray),
             lastMessagesInDialogArray: JSON.parse(el.dataset.lastMessagesInDialogArray),
+            lastMessageTimeInDialogArray: JSON.parse(el.dataset.lastMessageTimeInDialogArray),
             mercureUrl: el.dataset.mercureUrl
         };
 

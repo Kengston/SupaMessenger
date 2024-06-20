@@ -58,12 +58,14 @@ class UserController extends AbstractController
         $users = $this->userRepository->findAll();
         $userList = $this->userService->getUsersListSerialized($users);
         $unreadMesssageStatusArray = $this->messageService->getUnreadMessagesStatusForUsers($currentUser, $users);
-        $lastMessagesInDialogArray = $lastMessagesInDialogArray = $this->dialogService->getLastMessagesInDialog($currentUser, $users);
+        $lastMessagesInDialogArray = $this->dialogService->getLastMessagesInDialog($currentUser, $users);
+        $lastMessageTimeInDialogArray = $this->dialogService->getLastMessageTimeInDialogArray($currentUser, $users);
 
         return $this->json([
             'userList' => $userList,
             'unreadMessageStatusArray' => $unreadMesssageStatusArray,
-            'lastMessagesInDialogArray' => $lastMessagesInDialogArray
+            'lastMessagesInDialogArray' => $lastMessagesInDialogArray,
+            'lastMessageTimeInDialogArray' => $lastMessageTimeInDialogArray,
         ]);
     }
 }

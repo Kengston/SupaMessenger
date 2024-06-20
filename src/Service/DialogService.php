@@ -82,6 +82,18 @@ class DialogService
         return $lastMessagesInDialog;
     }
 
+    public function getLastMessageTimeInDialogArray(User $currentUser, array $users): array
+    {
+        $lastMessageTimeInDialog = [];
+
+        foreach ($users as $user) {
+            $lastMessage = $this->messageRepository->getLastMessageInDialog($currentUser, $user);
+            $lastMessageTimeInDialog[$user->getId()] = ($lastMessage && $lastMessage->getUpdatedAt()) ? $lastMessage->getUpdatedAt() : ($lastMessage ? $lastMessage->getCreatedAt() : null);
+        }
+
+        return $lastMessageTimeInDialog;
+    }
+
     public function deleteAllMessagesInDialog($selectedDialog)
     {
         foreach ($selectedDialog as $message) {
