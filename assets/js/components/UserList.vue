@@ -13,7 +13,7 @@
     <div v-if="searchResults.length > 0">
       <ul class="bg-white w-3/12 mx-auto block border border-gray-100 rounded shadow-lg z-50 absolute">
         <UserItem
-            v-for="user in filteredUsers"
+            v-for="user in searchResults"
             :key="user.id"
             :userData="user"
             :unreadMessageStatusArray="localUnreadMessageStatusArray"
@@ -37,7 +37,7 @@
   <ForwardMessageModal
       :showModal="showForwardMessageModal"
       :message="forwardMessage"
-      :users="localUsers"
+      :users="filteredUsers"
       :lastMessagesInDialogArray="localLastMessagesInDialogArray"
       v-on:closeModal="showForwardMessageModal = false"
   />
@@ -110,7 +110,6 @@ export default {
         this.localUnreadMessageStatusArray = response.data.unreadMessageStatusArray;
         this.localLastMessagesInDialogArray = response.data.lastMessagesInDialogArray;
 
-        console.log(this.localLastMessagesInDialogArray)
       } catch (error) {
         console.error('Could not update user list:', error);
       }
