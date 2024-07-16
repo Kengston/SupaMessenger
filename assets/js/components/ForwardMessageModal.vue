@@ -93,7 +93,9 @@ export default {
       formData.append('content', this.message.content);
       formData.append('recipient', user.id);
       formData.append('forwardedFrom', this.message.sender);
-      formData.append('photoData', this.message.photoData);
+      if (this.message.photoData !== null) {
+        formData.append('photoData', this.message.photoData);
+      }
 
 
       console.log(this.message);

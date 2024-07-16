@@ -31,7 +31,12 @@ class MessageController extends AbstractController
         $content = $request->request->get('content');
         $photoFilename = $request->request->get('photoData');
 
-        $newMessage = $this->messageService->createAndPersist($sender, $recipient, $content, $photoFilename, null, $forwardedFrom);
+
+        if ($photoFilename === null) {
+            $newMessage = $this->messageService->createAndPersist($sender, $recipient, $content, null, null, $forwardedFrom);
+        } else {
+            $newMessage = $this->messageService->createAndPersist($sender, $recipient, $content, $photoFilename, null, $forwardedFrom);
+        }
 
         if (!$newMessage) {
             return new JsonResponse(['error' => 'Unable to create new message!'], Response::HTTP_INTERNAL_SERVER_ERROR);
