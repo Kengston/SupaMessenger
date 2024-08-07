@@ -74,7 +74,7 @@
             <button @click="forwardMessage()" class="block">Forward</button>
           </li>
           <li>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
+            <a @click.prevent="copyToClipboard(message.content)" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Copy</a>
           </li>
           <li class="hover:bg-gray-100">
             <button class="message-edit-btn block px-4 py-2" @click="toggleEdit">Edit</button>
@@ -169,7 +169,14 @@ export default {
     },
     replyToMessage() {
       this.$emit('reply', this.message);
-    }
+    },
+    copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Text copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    },
   },
 };
 </script>
