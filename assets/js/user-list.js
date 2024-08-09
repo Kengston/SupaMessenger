@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (el !== null) {
 
-
         const props = {
             users: JSON.parse(el.dataset.users),
             currentUser: JSON.parse(el.dataset.currentUser),
