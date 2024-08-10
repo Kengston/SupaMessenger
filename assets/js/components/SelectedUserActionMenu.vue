@@ -9,7 +9,7 @@
     <ul>
       <li class="flex items-center py-2 px-4 bg-white text-red-500 hover:text-red-700 active:bg-red -200 transition-colors duration-200 cursor-pointer">
         <span class="h-3 w-3 mb-3 mr-2"><i class="fa-solid fa-trash"></i></span>
-        <button @click="deleteDialog" class="ml-2">Delete dialog</button>
+        <button @click="deleteAction" class="ml-2">Delete dialog</button>
       </li>
     </ul>
   </div>
@@ -19,29 +19,37 @@
         {{ selectedUser.status === 'online' ? selectedUser.status : `User was here at: ${selectedUser.changeStatusAt}` }}
       </span>
   </div>
+  <delete-dialog-modal :showModal="showDeleteDialogModal" :userToDelete="selectedUser"></delete-dialog-modal>
 </template>
 
 <script>
 import axios from 'axios';
+import DeleteDialogModal from "./DeleteDialogModal.vue";
+import { EventBus } from "../EventBus";
 
 export default {
   props: ['selectedUser'],
+  components: {
+    DeleteDialogModal
+  },
+  data() {
+    return {
+      showDeleteDialogModal: false,
+    };
+  },
+  created() {
+    EventBus.on('close-delete-dialog-modal', this.closeModal);
+  },
+  beforeDestroy() {
+    EventBus.off('close-delete-dialog-modal', this.closeModal);
+  },
   methods: {
-    deleteDialog() {
-      let url = `/user/dialog/${this.selectedUser.id}/delete`;
-
-      axios.get(url)
-          .then(response => {
-            console.log(response);
-            // Redirect after successful delete
-            window.location.href = "/user/dialog/0";
-          })
-          .catch(error => {
-            console.log(error);
-            // Handle error here
-          });
+    closeModal() {
+      this.showDeleteDialogModal = false;
+    },
+    deleteAction() {
+      this.showDeleteDialogModal = true;
     }
   }
-}
-
+};
 </script>
