@@ -22,8 +22,27 @@
             :currentUser="currentUser"
             :replyToMessage="message.replyToMessage"
             @reply="setReply"
+            @enlarge-image="photoToEnlarge = $event"
         ></UserMessageBubble>
       </template>
+
+      <transition
+          name="modal"
+          enter-active-class="ease-out transition-normal"
+          leave-active-class="ease-in transition-fast"
+      >
+        <div
+            v-if="photoToEnlarge"
+            class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 w-full h-full"
+            @click="photoToEnlarge = null"
+        >
+          <img
+              :src="'/uploads/' + photoToEnlarge"
+              alt="Message Photo"
+              class="object-contain max-w-[90vw] max-h-[90vh]"
+          />
+        </div>
+      </transition>
     </div>
 
     <MessageForm
@@ -48,6 +67,7 @@ export default {
       currentMessages: this.messages,
       replyMessage: null,
       flash: { message: null, type: null },
+      photoToEnlarge: null
     }
   },
   props: ['selectedUser', 'currentUser', 'mercureUrl', 'messages'],

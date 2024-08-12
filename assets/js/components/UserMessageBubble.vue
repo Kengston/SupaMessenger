@@ -27,10 +27,23 @@
           </div>
         </div>
 
-        <img v-if="message.photoData" :src="'/uploads/' + message.photoData" alt="Message Photo" class="max-w-xs mt-2" />
+        <img
+            v-if="message.photoData"
+            :src="'/uploads/' + message.photoData"
+            alt="Message Photo"
+            :class="['cursor-pointer','transition-all', 'duration-300', 'transform', 'ease-out', 'max-w-xs', 'mt-2', 'relative']"
+            @mouseover="showIcon = true"
+            @mouseleave="showIcon = false"
+            @click="(e) => { e.stopPropagation(); enlargeImage(); }"
+        />
+        <i
+            v-if="showIcon"
+            ref="iconEle"
+            class="fa-solid fa-magnifying-glass absolute top-1/2 left-1/2 z-10 opacity-80 transition-transform duration-300 ease-out"
+            :style="{'transform': iconStyle}"
+        />
 
         <div v-if="!editMode" class="message-content text-lg font-light py-2.5 text-gray-900 dark:text-white break-words overflow-auto">{{ message.content }}</div>
-
 
         <!-- Edit mode -->
         <div v-if="editMode" class="flex items-center">
@@ -105,6 +118,8 @@ export default {
   },
   data() {
     return {
+      showIcon: false,
+      iconStyle: 'translate(-50%, -50%)',
       editMode: false,
       forwardMessage: false,
       editInputContent: "",
@@ -176,6 +191,9 @@ export default {
       }).catch(err => {
         console.error('Failed to copy text: ', err);
       });
+    },
+    enlargeImage() {
+      this.$emit('enlarge-image', this.message.photoData);
     },
   },
 };
