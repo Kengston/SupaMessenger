@@ -27,7 +27,22 @@
           </div>
         </div>
 
-        <img v-if="message.photoData" :src="'/uploads/' + message.photoData" alt="Message Photo" class="max-w-xs mt-2" />
+        <img
+            v-if="message.photoData"
+            :src="'/uploads/' + message.photoData"
+            alt="Message Photo"
+            :class="['cursor-pointer','transition-all', 'duration-300', 'transform', 'ease-out', 'max-w-xs', 'mt-2', 'relative']"
+            @mouseover="showIcon = true"
+            @mouseleave="showIcon = false"
+            @click="(e) => { e.stopPropagation(); enlargeImage(); }"
+        />
+        <i
+            v-if="showIcon"
+            ref="iconEle"
+            class="fa-solid fa-magnifying-glass absolute top-1/2 left-1/2 z-10 opacity-80 transition-transform duration-300 ease-out"
+            :style="{'transform': iconStyle}"
+        />
+
         <p class="text-lg font-light max-w-[420px] py-2.5 text-gray-900 dark:text-white break-words overflow-auto">{{ message.content }}</p>
         <span class="message-timestamp text-sm font-normal text-gray-500 dark:text-gray-400">
           <template v-if="message.updatedAt">Edited at {{ message.updatedAt }}</template>
@@ -75,6 +90,8 @@
     },
     data() {
       return {
+        showIcon: false,
+        iconStyle: 'translate(-50%, -50%)',
         forwardMessage: false,
         dropdowns: {}, // Storing all instances in `dropdowns` object.
       };
@@ -103,6 +120,9 @@
         }).catch(err => {
           console.error('Failed to copy text: ', err);
         });
+      },
+      enlargeImage() {
+        this.$emit('enlarge-image', this.message.photoData);
       },
     },
   }

@@ -13,6 +13,7 @@
             :selectedUser="selectedUser"
             :replyToMessage="message.replyToMessage"
             @reply="setReply"
+            @enlarge-image="photoToEnlarge = $event"
         ></OtherMessageBubble>
 
         <!-- Show current user's message -->
